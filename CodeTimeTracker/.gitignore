@@ -1,0 +1,47 @@
+## VisualStudio.gitignore (abridged but covers your exact mess)
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015+ cache/options directory
+.vs/
+
+# .NET Build/Output
+**/bin/*
+**/obj/*
+*.dll
+*.pdb
+*.exe
+*.deps.json
+*.runtimeconfig.json
+*.cache
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+
+# More VS junk
+*.vspscc
+*.vssscc
+*.vs/

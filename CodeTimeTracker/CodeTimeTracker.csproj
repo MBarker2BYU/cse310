@@ -6,6 +6,16 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Title>CodeTime Tracker</Title>
+    <Product>CodeTime Tracker</Product>
+    <Copyright>Copyright © 2026 Matthew D. Barker. All rights reserved.</Copyright>
+    <Description>A lightweight, distraction-free desktop tool that automatically tracks your real coding time across projects — no manual start/stop needed.
+
+See precise stats per file, language, project, and day/week/month. Gentle reminders keep you focused, beautiful visualizations show your flow, and detailed reports help with billing, Pomodoro-style work, or just proving you actually coded 8 hours yesterday 😏.
+
+Perfect for freelancers, indie devs, open-source contributors, or anyone who wants honest insight into where their coding hours really go.</Description>
+    <Company>ShadowWorx Systems</Company>
+    <Authors>Matthew D. Barker</Authors>
   </PropertyGroup>
 
 </Project>

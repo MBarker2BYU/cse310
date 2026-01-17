@@ -1,0 +1,71 @@
+﻿namespace CodeTimeTracker.Controls
+{
+    partial class AdvDateTimePicker
+    {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Component Designer generated code
+
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            dtpDate = new DateTimePicker();
+            dtpTime = new DateTimePicker();
+            SuspendLayout();
+            // 
+            // dtpDate
+            // 
+            dtpDate.CustomFormat = "    MM / dd / yyyy";
+            dtpDate.Format = DateTimePickerFormat.Custom;
+            dtpDate.Location = new Point(0, 2);
+            dtpDate.Name = "dtpDate";
+            dtpDate.Size = new Size(140, 23);
+            dtpDate.TabIndex = 2;
+            // 
+            // dtpTime
+            // 
+            dtpTime.CustomFormat = "    HH:mm:ss";
+            dtpTime.Format = DateTimePickerFormat.Custom;
+            dtpTime.Location = new Point(146, 2);
+            dtpTime.Name = "dtpTime";
+            dtpTime.ShowUpDown = true;
+            dtpTime.Size = new Size(100, 23);
+            dtpTime.TabIndex = 3;
+            // 
+            // AdvDateTimePicker
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(dtpTime);
+            Controls.Add(dtpDate);
+            MaximumSize = new Size(252, 28);
+            MinimumSize = new Size(252, 28);
+            Name = "AdvDateTimePicker";
+            Size = new Size(252, 28);
+            ResumeLayout(false);
+        }
+
+        #endregion
+        private DateTimePicker dtpDate;
+        private DateTimePicker dtpTime;        
+    }
+}

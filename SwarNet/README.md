@@ -32,7 +32,3 @@ My primary purpose in building this software was to gain deep, practical experie
 * [Making Thread-Safe Calls to Windows Forms Controls](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/controls/how-to-make-thread-safe-calls)  
 * [C# Network Programming Best Practices](https://learn.microsoft.com/en-us/dotnet/framework/network-programming/)  
 * [Battleship Game Rules & Strategy](https://en.wikipedia.org/wiki/Battleship_(game))  
-
-SwarNet – Sea Warfare Network  
-by ShadowWorx Systems  
-🚢🌊

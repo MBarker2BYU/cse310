@@ -18,7 +18,7 @@ The application emphasizes clean UI design, reliable timing logic, and data inte
 
 # Development Environment
 
-- **IDE**: Visual Studio 2022 Community Edition (full-featured for WinForms development, debugging, and UI design)
+- **IDE**: Visual Studio 2026 Professional Edition (full-featured for WinForms development, debugging, and UI design)
 - **Programming Language**: C# (.NET 8 / Windows Forms)
 - **Data Storage**: System.Text.Json for serialization/deserialization to local JSON file
 - **Target Platform**: Windows desktop (x64)

@@ -44,7 +44,7 @@ namespace CodeTimeTracker
 
         private void InitializeUI()
         {
-            cmbCodeObjectType.Items.AddRange(new[] { "Form", "Class", "UserControl", "Service", "ViewModel", "Component", "Controller", "Model", "View", "" });
+            cmbCodeObjectType.Items.AddRange(new[] { "Document","Research","Form", "Class", "UserControl", "Service", "ViewModel", "Component", "Controller", "Model", "View", "" });
             cmbCodeObjectType.SelectedIndex = cmbCodeObjectType.Items.Count - 1;
 
             WireEvents();

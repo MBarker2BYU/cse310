@@ -162,6 +162,7 @@
             // btnStop
             // 
             btnStop.BackColor = SystemColors.ControlDark;
+            btnStop.Enabled = false;
             btnStop.FlatStyle = FlatStyle.System;
             btnStop.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnStop.ForeColor = Color.White;
@@ -176,6 +177,7 @@
             // btnPause
             // 
             btnPause.BackColor = SystemColors.ControlDark;
+            btnPause.Enabled = false;
             btnPause.FlatStyle = FlatStyle.System;
             btnPause.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnPause.ForeColor = Color.White;
@@ -321,20 +323,20 @@
             // 
             mnuData.DropDownItems.AddRange(new ToolStripItem[] { mnuExport, toolStripMenuItem2, mnuReset });
             mnuData.Name = "mnuData";
-            mnuData.Size = new Size(180, 22);
+            mnuData.Size = new Size(98, 22);
             mnuData.Text = "&Data";
             // 
             // mnuExport
             // 
             mnuExport.DropDownItems.AddRange(new ToolStripItem[] { mnuExportProject, mnuExportFull });
             mnuExport.Name = "mnuExport";
-            mnuExport.Size = new Size(180, 22);
+            mnuExport.Size = new Size(107, 22);
             mnuExport.Text = "&Export";
             // 
             // mnuExportProject
             // 
             mnuExportProject.Name = "mnuExportProject";
-            mnuExportProject.Size = new Size(180, 22);
+            mnuExportProject.Size = new Size(111, 22);
             mnuExportProject.Text = "&Project";
             mnuExportProject.Click += btnExportProject_Click;
             // 
@@ -342,44 +344,44 @@
             // 
             mnuExportFull.DropDownItems.AddRange(new ToolStripItem[] { mnuExportFullText, mnuExportFullCSV });
             mnuExportFull.Name = "mnuExportFull";
-            mnuExportFull.Size = new Size(180, 22);
+            mnuExportFull.Size = new Size(111, 22);
             mnuExportFull.Text = "Full";
             // 
             // mnuExportFullText
             // 
             mnuExportFullText.Name = "mnuExportFullText";
-            mnuExportFullText.Size = new Size(180, 22);
+            mnuExportFullText.Size = new Size(111, 22);
             mnuExportFullText.Text = "As Text";
             mnuExportFullText.Click += btnExportFullTxt_Click;
             // 
             // mnuExportFullCSV
             // 
             mnuExportFullCSV.Name = "mnuExportFullCSV";
-            mnuExportFullCSV.Size = new Size(180, 22);
+            mnuExportFullCSV.Size = new Size(111, 22);
             mnuExportFullCSV.Text = "As CSV";
             mnuExportFullCSV.Click += btnExportFullCsv_Click;
             // 
             // toolStripMenuItem2
             // 
             toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(177, 6);
+            toolStripMenuItem2.Size = new Size(104, 6);
             // 
             // mnuReset
             // 
             mnuReset.Name = "mnuReset";
-            mnuReset.Size = new Size(180, 22);
+            mnuReset.Size = new Size(107, 22);
             mnuReset.Text = "&Reset";
             mnuReset.Click += mnuReset_Click;
             // 
             // mnuSep
             // 
             mnuSep.Name = "mnuSep";
-            mnuSep.Size = new Size(177, 6);
+            mnuSep.Size = new Size(95, 6);
             // 
             // mnuExit
             // 
             mnuExit.Name = "mnuExit";
-            mnuExit.Size = new Size(180, 22);
+            mnuExit.Size = new Size(98, 22);
             mnuExit.Text = "E&xit";
             mnuExit.Click += mnuExit_Click;
             // 

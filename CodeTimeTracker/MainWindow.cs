@@ -27,300 +27,6 @@ namespace CodeTimeTracker
             }
         }
 
-        #endregion
-
-        #region Methods
-
-        #region Constructors
-
-        #endregion
-
-        #endregion
-
-        public MainWindow()
-        {
-            InitializeComponent();
-           
-            dgvEntries.ContextMenuStrip = contextMenuGrid;
-
-            LoadData();                 // Load JSON on startup
-            RefreshProjectDropdown();   // Show projects in combo box
-            RefreshEntriesGrid();
-
-            // Timer setup: updates UI every second while running
-            m_Timer.Interval = 1000; // 1 second
-            m_Timer.Tick += Timer_Tick;
-        }
-
-        private void LoadData()
-        {
-            try
-            {
-                m_Data = JsonStorage.Load();
-
-                // Optional: Show a message if no data yet (first run)
-                if (m_Data.Projects.Count == 0)
-                {
-                    lblCurrentStatus.Text = "No projects yet. Click 'New Project...' to start.";
-                    lblCurrentStatus.ForeColor = Color.DarkOrange;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading data file:\n{ex.Message}\n\nStarting with empty data.",
-                    "Data Load Issue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                m_Data = new TimeTrackerData();
-            }
-        }
-
-        private void RefreshProjectDropdown()
-        {
-            cmbProject.Items.Clear();
-
-            if (m_Data.Projects.Count == 0)
-            {               
-                btnNewCodeObject.Enabled = false;
-                txtTaskName.Enabled = false;
-                btnStart.Enabled = false;
-                return;
-            }
-
-            cmbProject.LoadProjects(m_Data);
-                       
-            btnNewCodeObject.Enabled = true;
-            txtTaskName.Enabled = true;
-            btnStart.Enabled = true;
-
-            lblCurrentStatus.Text = $"Loaded {m_Data.Projects.Count} project(s). Ready to track time.";
-        }
-
-        // Temporary: Quick way to test adding a project manually (remove later)
-        private void btnNewProject_Click(object sender, EventArgs e)
-        {
-
-            var newProjectWindow = new NewProjectWindow() { Data = m_Data };
-
-            if (newProjectWindow.ShowDialog() != DialogResult.OK && !string.IsNullOrWhiteSpace(newProjectWindow.NewProject?.Name))
-                return;
-
-            RefreshProjectDropdown();
-
-            if (newProjectWindow.NewProject != null)
-                cmbProject.SelectedItem = newProjectWindow.NewProject;
-
-            RefreshEntriesGrid();
-        }
-
-        private void btnStart_Click(object sender, EventArgs e)
-        {
-            // === Resume case: if we have a paused entry ===
-            if (m_CurrentEntry != null && m_CurrentEntry.EndTime == null)
-            {
-                // Already running or paused → just restart timer
-                m_Timer.Start();
-                m_LastTick = DateTime.Now;
-                UpdateStatusLabel();
-                btnStart.Enabled = false;
-                btnStop.Enabled = true;
-                btnPause.Enabled = true;
-                return;
-            }
-
-            // === New tracking case ===
-            if (cmbProject.SelectedItem == null || cmbCodeObject.SelectedItem == null || string.IsNullOrWhiteSpace(txtTaskName.Text))
-            {
-                MessageBox.Show("Select a Project, Code Object, and enter a Task Name before starting.",
-                                "Missing Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            CodeObject selectedCodeObj = (CodeObject)cmbCodeObject.SelectedItem;
-
-            m_CurrentEntry = new TimeEntry
-            {
-                CodeObjectId = selectedCodeObj.Id,
-                TaskName = txtTaskName.Text.Trim(),
-                StartTime = DateTime.Now,
-                Notes = ""
-            };
-
-            m_Data.TimeEntries.Add(m_CurrentEntry);
-            JsonStorage.Save(m_Data);
-
-            m_Timer.Start();
-            m_LastTick = DateTime.Now;
-
-            UpdateStatusLabel();
-            btnStart.Enabled = false;
-            btnStop.Enabled = true;
-            btnPause.Enabled = true;
-            txtTaskName.Enabled = false;
-        }
-
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-            if (m_CurrentEntry == null) return;
-
-            m_Timer.Stop();
-
-            m_CurrentEntry.EndTime = DateTime.Now;
-            JsonStorage.Save(m_Data);
-
-            m_CurrentEntry = null;
-
-            UpdateStatusLabel();
-
-            btnStart.Enabled = true;
-            btnStop.Enabled = false;
-            btnPause.Enabled = false;
-            txtTaskName.Enabled = true;
-            txtTaskName.Clear();
-
-            RefreshEntriesGrid(); // We'll add this method next step
-        }
-
-        private void btnPause_Click(object sender, EventArgs e)
-        {
-            if (m_CurrentEntry == null) return;
-
-            m_Timer.Stop();
-
-            // Keep _currentEntry alive so we can resume
-            UpdateStatusLabel("Paused. Click START to resume this task.");
-
-            btnStart.Enabled = true;      // Allow resume
-            btnStop.Enabled = true;       // Allow final stop
-            btnPause.Enabled = false;     // Can't pause again while paused
-        }
-
-        private void Timer_Tick(object? sender, EventArgs e)
-        {
-            if (m_CurrentEntry == null) return;
-
-            // Update status every second
-            UpdateStatusLabel();
-        }
-
-        private void UpdateStatusLabel(string overrideText = null)
-        {
-            if (overrideText != null)
-            {
-                lblCurrentStatus.Text = overrideText;
-                lblCurrentStatus.ForeColor = Color.DarkOrange;
-                return;
-            }
-
-            if (m_CurrentEntry == null)
-            {
-                lblCurrentStatus.Text = "No timer running...";
-                lblCurrentStatus.ForeColor = Color.DarkSlateGray;
-                return;
-            }
-
-            var duration = m_CurrentEntry.Duration;
-            string status = $"Tracking: {duration.Hours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2} | Task: {m_CurrentEntry.TaskName}";
-            lblCurrentStatus.Text = status;
-            lblCurrentStatus.ForeColor = Color.DarkGreen;
-        }
-
-        private void RefreshCodeObjectDropdown()
-        {
-            cmbCodeObject.LoadCodeObjects(m_Data, cmbProject, btnNewCodeObject);            
-        }
-
-        private void cmbProject_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            RefreshCodeObjectDropdown();
-            txtTaskName.Clear();
-            UpdateStatusLabel();
-
-            RefreshEntriesGrid();
-        }
-
-        private void btnNewCodeObject_Click(object sender, EventArgs e)
-        {
-
-            if (cmbProject.SelectedItem == null || !(cmbProject.SelectedItem is Project selectedProject))
-            {
-                MessageBox.Show("Select a project first.", "No Project Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var newCodeObjectWindow = new NewCodeObjectWindow() { ProjectId = selectedProject.Id, Data = m_Data };
-
-            if (newCodeObjectWindow.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(newCodeObjectWindow.NewCodeObject?.Name))
-            {
-                RefreshCodeObjectDropdown();
-
-                cmbCodeObject.SelectedItem = newCodeObjectWindow.NewCodeObject;
-
-                RefreshEntriesGrid();
-            }
-        }
-
-        private void RefreshEntriesGrid()
-        {
-            dgvEntries.Rows.Clear();
-            dgvEntries.Columns.Clear();
-
-            dgvEntries.Columns.Add("CodeObject", "Code Object");
-            dgvEntries.Columns.Add("Type", "Type");
-            dgvEntries.Columns.Add("Task", "Task");
-            dgvEntries.Columns.Add("Start", "Start Time");
-            dgvEntries.Columns.Add("End", "End Time");
-            dgvEntries.Columns.Add("Duration", "Duration");
-
-            using (DataGridViewTextBoxColumn idColumn = new() { Name = "EntryId", Visible = false })
-            {
-                dgvEntries.Columns.Add(idColumn);
-            }
-
-            dgvEntries.Columns["Duration"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-
-            var visibleTotal = TimeSpan.Zero;
-
-            var visibleEntries = m_Data.TimeEntries
-                .Where(en => chkShowDeleted.Checked || !en.IsDeleted)
-                .OrderByDescending(e => e.StartTime);
-
-            foreach (var entry in visibleEntries)
-            {
-                var codeObj = m_Data.CodeObjects.FirstOrDefault(co => co.Id == entry.CodeObjectId);
-                if (codeObj == null) continue;
-
-                if (cmbProject.SelectedItem is Project selectedProject && codeObj.ProjectId != selectedProject.Id)
-                    continue;
-
-                int rowIndex = dgvEntries.Rows.Add(
-                    codeObj.Name ?? "Unknown",
-                    codeObj.Type ?? "",
-                    entry.TaskName,
-                    entry.StartTime.ToString("MM/dd HH:mm"),
-                    entry.EndTime?.ToString("MM/dd HH:mm") ?? "Running",
-                    entry.DurationFormatted,
-                    entry.Id.ToString()
-                );
-
-                if (entry.IsDeleted)
-                {
-                    var row = dgvEntries.Rows[rowIndex];
-                    row.DefaultCellStyle.ForeColor = Color.Gray;
-                    row.DefaultCellStyle.Font = new Font(dgvEntries.Font, FontStyle.Strikeout);
-                }
-
-                if (entry.IsDeleted)
-                    continue;
-
-                visibleTotal += entry.Duration;
-            }
-
-            string prefix = "Total Project Time: ";
-
-            lblTotalTime.Text = $"{prefix}{(visibleTotal.Days * 24) + visibleTotal.Hours:D2} hours and {visibleTotal.Minutes:D2} minutes";
-
-            dgvEntries.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-        }
-
         private void chkShowDeleted_CheckedChanged(object sender, EventArgs e)
         {
             RefreshEntriesGrid();
@@ -505,7 +211,7 @@ namespace CodeTimeTracker
                 RefreshEntriesGrid();
             }
         }
-        
+
         private void mnuAbout_Click(object sender, EventArgs e)
         {
             var aboutWindow = new AboutWindow();
@@ -527,7 +233,7 @@ namespace CodeTimeTracker
                 "CRITICAL WARNING – Data Loss",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Error,
-                MessageBoxDefaultButton.Button2); 
+                MessageBoxDefaultButton.Button2);
 
             if (warning1 != DialogResult.Yes)
                 return;
@@ -546,7 +252,7 @@ namespace CodeTimeTracker
             }
 
             try
-            {             
+            {
 
                 // Clear in-memory data
                 m_Data.Projects.Clear();
@@ -570,5 +276,296 @@ namespace CodeTimeTracker
                     "Delete Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void cmbProject_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshCodeObjectDropdown();
+            txtTaskName.Clear();
+            UpdateStatusLabel();
+
+            RefreshEntriesGrid();
+        }
+
+        private void btnNewCodeObject_Click(object sender, EventArgs e)
+        {
+
+            if (cmbProject.SelectedItem == null || !(cmbProject.SelectedItem is Project selectedProject))
+            {
+                MessageBox.Show("Select a project first.", "No Project Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var newCodeObjectWindow = new NewCodeObjectWindow() { ProjectId = selectedProject.Id, Data = m_Data };
+
+            if (newCodeObjectWindow.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(newCodeObjectWindow.NewCodeObject?.Name))
+            {
+                RefreshCodeObjectDropdown();
+
+                cmbCodeObject.SelectedItem = newCodeObjectWindow.NewCodeObject;
+
+                RefreshEntriesGrid();
+            }
+        }
+
+        private void btnNewProject_Click(object sender, EventArgs e)
+        {
+
+            var newProjectWindow = new NewProjectWindow() { Data = m_Data };
+
+            if (newProjectWindow.ShowDialog() != DialogResult.OK && !string.IsNullOrWhiteSpace(newProjectWindow.NewProject?.Name))
+                return;
+
+            RefreshProjectDropdown();
+
+            if (newProjectWindow.NewProject != null)
+                cmbProject.SelectedItem = newProjectWindow.NewProject;
+
+            RefreshEntriesGrid();
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            // === Resume case: if we have a paused entry ===
+            if (m_CurrentEntry != null && m_CurrentEntry.EndTime == null)
+            {
+                // Already running or paused → just restart timer
+                m_Timer.Start();
+                m_LastTick = DateTime.Now;
+                UpdateStatusLabel();
+                btnStart.Enabled = false;
+                btnStop.Enabled = true;
+                btnPause.Enabled = true;
+                return;
+            }
+
+            // === New tracking case ===
+            if (cmbProject.SelectedItem == null || cmbCodeObject.SelectedItem == null || string.IsNullOrWhiteSpace(txtTaskName.Text))
+            {
+                MessageBox.Show("Select a Project, Code Object, and enter a Task Name before starting.",
+                                "Missing Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            CodeObject selectedCodeObj = (CodeObject)cmbCodeObject.SelectedItem;
+
+            m_CurrentEntry = new TimeEntry
+            {
+                CodeObjectId = selectedCodeObj.Id,
+                TaskName = txtTaskName.Text.Trim(),
+                StartTime = DateTime.Now,
+                Notes = ""
+            };
+
+            m_Data.TimeEntries.Add(m_CurrentEntry);
+            JsonStorage.Save(m_Data);
+
+            m_Timer.Start();
+            m_LastTick = DateTime.Now;
+
+            UpdateStatusLabel();
+            btnStart.Enabled = false;
+            btnStop.Enabled = true;
+            btnPause.Enabled = true;
+            txtTaskName.Enabled = false;
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            if (m_CurrentEntry == null) return;
+
+            m_Timer.Stop();
+
+            m_CurrentEntry.EndTime = DateTime.Now;
+            JsonStorage.Save(m_Data);
+
+            m_CurrentEntry = null;
+
+            UpdateStatusLabel();
+
+            btnStart.Enabled = true;
+            btnStop.Enabled = false;
+            btnPause.Enabled = false;
+            txtTaskName.Enabled = true;
+            txtTaskName.Clear();
+
+            RefreshEntriesGrid(); // We'll add this method next step
+        }
+
+        private void btnPause_Click(object sender, EventArgs e)
+        {
+            if (m_CurrentEntry == null) return;
+
+            m_Timer.Stop();
+
+            // Keep _currentEntry alive so we can resume
+            UpdateStatusLabel("Paused. Click START to resume this task.");
+
+            btnStart.Enabled = true;      // Allow resume
+            btnStop.Enabled = true;       // Allow final stop
+            btnPause.Enabled = false;     // Can't pause again while paused
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if (m_CurrentEntry == null) return;
+
+            // Update status every second
+            UpdateStatusLabel();
+        }
+
+        #endregion
+
+        #region Methods
+
+        #region Constructors
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            dgvEntries.ContextMenuStrip = contextMenuGrid;
+
+            LoadData();                 // Load JSON on startup
+            RefreshProjectDropdown();   // Show projects in combo box
+            RefreshEntriesGrid();
+
+            // Timer setup: updates UI every second while running
+            m_Timer.Interval = 1000; // 1 second
+            m_Timer.Tick += Timer_Tick;
+        }
+        #endregion
+                
+        private void LoadData()
+        {
+            try
+            {
+                m_Data = JsonStorage.Load();
+
+                // Optional: Show a message if no data yet (first run)
+                if (m_Data.Projects.Count == 0)
+                {
+                    lblCurrentStatus.Text = "No projects yet. Click 'New Project...' to start.";
+                    lblCurrentStatus.ForeColor = Color.DarkOrange;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading data file:\n{ex.Message}\n\nStarting with empty data.",
+                    "Data Load Issue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                m_Data = new TimeTrackerData();
+            }
+        }
+
+        private void RefreshProjectDropdown()
+        {
+            cmbProject.Items.Clear();
+
+            if (m_Data.Projects.Count == 0)
+            {
+                btnNewCodeObject.Enabled = false;
+                txtTaskName.Enabled = false;
+                btnStart.Enabled = false;
+                return;
+            }
+
+            cmbProject.LoadProjects(m_Data);
+
+            btnNewCodeObject.Enabled = true;
+            txtTaskName.Enabled = true;
+            btnStart.Enabled = true;
+
+            lblCurrentStatus.Text = $"Loaded {m_Data.Projects.Count} project(s). Ready to track time.";
+        }
+        
+        private void UpdateStatusLabel(string overrideText = null)
+        {
+            if (overrideText != null)
+            {
+                lblCurrentStatus.Text = overrideText;
+                lblCurrentStatus.ForeColor = Color.DarkOrange;
+                return;
+            }
+
+            if (m_CurrentEntry == null)
+            {
+                lblCurrentStatus.Text = "No timer running...";
+                lblCurrentStatus.ForeColor = Color.DarkSlateGray;
+                return;
+            }
+
+            var duration = m_CurrentEntry.Duration;
+            string status = $"Tracking: {duration.Hours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2} | Task: {m_CurrentEntry.TaskName}";
+            lblCurrentStatus.Text = status;
+            lblCurrentStatus.ForeColor = Color.DarkGreen;
+        }
+
+        private void RefreshCodeObjectDropdown()
+        {
+            cmbCodeObject.LoadCodeObjects(m_Data, cmbProject, btnNewCodeObject);
+        }
+                
+        private void RefreshEntriesGrid()
+        {
+            dgvEntries.Rows.Clear();
+            dgvEntries.Columns.Clear();
+
+            dgvEntries.Columns.Add("CodeObject", "Code Object");
+            dgvEntries.Columns.Add("Type", "Type");
+            dgvEntries.Columns.Add("Task", "Task");
+            dgvEntries.Columns.Add("Start", "Start Time");
+            dgvEntries.Columns.Add("End", "End Time");
+            dgvEntries.Columns.Add("Duration", "Duration");
+
+            using (DataGridViewTextBoxColumn idColumn = new() { Name = "EntryId", Visible = false })
+            {
+                dgvEntries.Columns.Add(idColumn);
+            }
+
+            dgvEntries.Columns["Duration"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
+            var visibleTotal = TimeSpan.Zero;
+
+            var visibleEntries = m_Data.TimeEntries
+                .Where(en => chkShowDeleted.Checked || !en.IsDeleted)
+                .OrderByDescending(e => e.StartTime);
+
+            foreach (var entry in visibleEntries)
+            {
+                var codeObj = m_Data.CodeObjects.FirstOrDefault(co => co.Id == entry.CodeObjectId);
+                if (codeObj == null) continue;
+
+                if (cmbProject.SelectedItem is Project selectedProject && codeObj.ProjectId != selectedProject.Id)
+                    continue;
+
+                int rowIndex = dgvEntries.Rows.Add(
+                    codeObj.Name ?? "Unknown",
+                    codeObj.Type ?? "",
+                    entry.TaskName,
+                    entry.StartTime.ToString("MM/dd HH:mm"),
+                    entry.EndTime?.ToString("MM/dd HH:mm") ?? "Running",
+                    entry.DurationFormatted,
+                    entry.Id.ToString()
+                );
+
+                if (entry.IsDeleted)
+                {
+                    var row = dgvEntries.Rows[rowIndex];
+                    row.DefaultCellStyle.ForeColor = Color.Gray;
+                    row.DefaultCellStyle.Font = new Font(dgvEntries.Font, FontStyle.Strikeout);
+                }
+
+                if (entry.IsDeleted)
+                    continue;
+
+                visibleTotal += entry.Duration;
+            }
+
+            string prefix = "Total Project Time: ";
+
+            lblTotalTime.Text = $"{prefix}{(visibleTotal.Days * 24) + visibleTotal.Hours:D2} hours and {visibleTotal.Minutes:D2} minutes";
+
+            dgvEntries.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+        }
+
+        #endregion
     }
 }

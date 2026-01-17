@@ -1,10 +1,34 @@
-﻿using CodeTimeTracker.Data.Models;
-using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : CodeTimeTracker
+// Author           : Matthew D. Barker
+// Created          : 01-16-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-16-2026
+// ***********************************************************************
+// <copyright file="ControlExtensions.cs" company="ShadowWorx Systems">
+//     Copyright © 2026 Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using CodeTimeTracker.Data.Models;
 
 namespace CodeTimeTracker.Extensions
 {
+    /// <summary>
+    /// Class ControlExtensions.
+    /// </summary>
     public static class ControlExtensions
     {
+        /// <summary>
+        /// Loads the ComboBox.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="combo">The combo.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="beforeLoad">The before load.</param>
+        /// <param name="afterLoad">The after load.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public static bool LoadComboBox<T>(this ComboBox combo, List<T> data , Func<bool>? beforeLoad, Func<bool>? afterLoad)
         {
             try
@@ -37,6 +61,16 @@ namespace CodeTimeTracker.Extensions
             }
         }
 
+        /// <summary>
+        /// Loads the ComboBox.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="combo">The combo.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="button">The button.</param>
+        /// <param name="beforeLoad">The before load.</param>
+        /// <param name="afterLoad">The after load.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public static bool LoadComboBox<T>(this ComboBox combo, List<T> data, Button? button, Func<bool>? beforeLoad, Func<bool>? afterLoad)
         {
             try
@@ -60,6 +94,13 @@ namespace CodeTimeTracker.Extensions
             }
         }
 
+        /// <summary>
+        /// Loads the projects.
+        /// </summary>
+        /// <param name="combo">The combo.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="button">The button.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public static bool LoadProjects(this ComboBox combo, TimeTrackerData data, Button? button = null)
         {
             try
@@ -113,6 +154,14 @@ namespace CodeTimeTracker.Extensions
             }
         }
 
+        /// <summary>
+        /// Loads the code objects.
+        /// </summary>
+        /// <param name="combo">The combo.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="projectCombo">The project combo.</param>
+        /// <param name="button">The button.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public static bool LoadCodeObjects(this ComboBox combo, TimeTrackerData data, ComboBox projectCombo, Button? button = null)
         {
             try

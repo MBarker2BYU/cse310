@@ -1,19 +1,54 @@
-﻿using CodeTimeTracker.Data;          // For JsonStorage
+﻿// ***********************************************************************
+// Assembly         : CodeTimeTracker
+// Author           : Matthew D. Barker
+// Created          : 01-15-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-16-2026
+// ***********************************************************************
+// <copyright file="MainWindow.cs" company="ShadowWorx Systems">
+//     Copyright © 2026 Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using CodeTimeTracker.Data;          // For JsonStorage
 using CodeTimeTracker.Data.Models;
 using CodeTimeTracker.Extensions;  // For TimeTrackerData, Project, etc.
 
 namespace CodeTimeTracker
 {
+    /// <summary>
+    /// Class MainWindow.
+    /// Implements the <see cref="System.Windows.Forms.Form" />
+    /// </summary>
+    /// <seealso cref="System.Windows.Forms.Form" />
     public partial class MainWindow : Form
     {
+        /// <summary>
+        /// The m data
+        /// </summary>
         private TimeTrackerData m_Data;  // Holds the loaded projects, objects, entries
 
+        /// <summary>
+        /// The m current entry
+        /// </summary>
         private TimeEntry? m_CurrentEntry = null;
+        /// <summary>
+        /// The m timer
+        /// </summary>
         private System.Windows.Forms.Timer m_Timer = new();
+        /// <summary>
+        /// The m last tick
+        /// </summary>
         private DateTime m_LastTick = DateTime.Now;
 
         #region Events
 
+        /// <summary>
+        /// Handles the Click event of the addManualEntryToolStripMenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void addManualEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using TimeEntryForm form = new(m_Data, cmbProject.SelectedItem as Project);
@@ -27,11 +62,21 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the CheckedChanged event of the chkShowDeleted control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void chkShowDeleted_CheckedChanged(object sender, EventArgs e)
         {
             RefreshEntriesGrid();
         }
 
+        /// <summary>
+        /// Handles the Click event of the deleteToolStripMenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dgvEntries.CurrentRow == null) return;
@@ -51,6 +96,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnExportFullTxt control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnExportFullTxt_Click(object sender, EventArgs e)
         {
             using SaveFileDialog saveDialog = new()
@@ -75,6 +125,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnExportFullCsv control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnExportFullCsv_Click(object sender, EventArgs e)
         {
             using SaveFileDialog saveDialog = new()
@@ -99,6 +154,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnExportProject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnExportProject_Click(object sender, EventArgs e)
         {
             if (cmbProject.SelectedItem == null || !(cmbProject.SelectedItem is Project selectedProject))
@@ -129,6 +189,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the CellMouseDown event of the dgvEntries control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
         private void dgvEntries_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
@@ -155,6 +220,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the editEntryToolStripMenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void editEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dgvEntries.CurrentRow == null) return;
@@ -174,6 +244,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the deleteEntryToolStripMenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void deleteEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dgvEntries.CurrentRow == null) return;
@@ -193,6 +268,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the restoreEntryToolStripMenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void restoreEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dgvEntries.CurrentRow == null) return;
@@ -212,6 +292,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the mnuAbout control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void mnuAbout_Click(object sender, EventArgs e)
         {
             var aboutWindow = new AboutWindow();
@@ -219,11 +304,21 @@ namespace CodeTimeTracker
             aboutWindow.ShowDialog();
         }
 
+        /// <summary>
+        /// Handles the Click event of the mnuExit control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void mnuExit_Click(object sender, EventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the mnuReset control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void mnuReset_Click(object sender, EventArgs e)
         {
             var warning1 = MessageBox.Show(
@@ -277,6 +372,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the SelectedIndexChanged event of the cmbProject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void cmbProject_SelectedIndexChanged(object sender, EventArgs e)
         {
             RefreshCodeObjectDropdown();
@@ -286,6 +386,11 @@ namespace CodeTimeTracker
             RefreshEntriesGrid();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnNewCodeObject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnNewCodeObject_Click(object sender, EventArgs e)
         {
 
@@ -307,6 +412,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnNewProject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnNewProject_Click(object sender, EventArgs e)
         {
 
@@ -323,6 +433,11 @@ namespace CodeTimeTracker
             RefreshEntriesGrid();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnStart control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnStart_Click(object sender, EventArgs e)
         {
             // === Resume case: if we have a paused entry ===
@@ -369,6 +484,11 @@ namespace CodeTimeTracker
             txtTaskName.Enabled = false;
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnStop control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnStop_Click(object sender, EventArgs e)
         {
             if (m_CurrentEntry == null) return;
@@ -391,6 +511,11 @@ namespace CodeTimeTracker
             RefreshEntriesGrid(); // We'll add this method next step
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnPause control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnPause_Click(object sender, EventArgs e)
         {
             if (m_CurrentEntry == null) return;
@@ -405,6 +530,11 @@ namespace CodeTimeTracker
             btnPause.Enabled = false;     // Can't pause again while paused
         }
 
+        /// <summary>
+        /// Handles the Tick event of the Timer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Timer_Tick(object? sender, EventArgs e)
         {
             if (m_CurrentEntry == null) return;
@@ -418,6 +548,9 @@ namespace CodeTimeTracker
         #region Methods
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -433,7 +566,10 @@ namespace CodeTimeTracker
             m_Timer.Tick += Timer_Tick;
         }
         #endregion
-                
+
+        /// <summary>
+        /// Loads the data.
+        /// </summary>
         private void LoadData()
         {
             try
@@ -455,6 +591,9 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Refreshes the project dropdown.
+        /// </summary>
         private void RefreshProjectDropdown()
         {
             cmbProject.Items.Clear();
@@ -475,7 +614,11 @@ namespace CodeTimeTracker
 
             lblCurrentStatus.Text = $"Loaded {m_Data.Projects.Count} project(s). Ready to track time.";
         }
-        
+
+        /// <summary>
+        /// Updates the status label.
+        /// </summary>
+        /// <param name="overrideText">The override text.</param>
         private void UpdateStatusLabel(string overrideText = null)
         {
             if (overrideText != null)
@@ -498,11 +641,17 @@ namespace CodeTimeTracker
             lblCurrentStatus.ForeColor = Color.DarkGreen;
         }
 
+        /// <summary>
+        /// Refreshes the code object dropdown.
+        /// </summary>
         private void RefreshCodeObjectDropdown()
         {
             cmbCodeObject.LoadCodeObjects(m_Data, cmbProject, btnNewCodeObject);
         }
-                
+
+        /// <summary>
+        /// Refreshes the entries grid.
+        /// </summary>
         private void RefreshEntriesGrid()
         {
             dgvEntries.Rows.Clear();

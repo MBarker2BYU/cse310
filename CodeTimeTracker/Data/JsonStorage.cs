@@ -1,19 +1,42 @@
-﻿using System;
-using System.IO;
+﻿// ***********************************************************************
+// Assembly         : CodeTimeTracker
+// Author           : Matthew D. Barker
+// Created          : 01-15-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-16-2026
+// ***********************************************************************
+// <copyright file="JsonStorage.cs" company="ShadowWorx Systems">
+//     Copyright © 2026 Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using System.Text.Json;
-using System.Linq;
 using CodeTimeTracker.Data.Models;
 
 namespace CodeTimeTracker.Data
 {
+    /// <summary>
+    /// Class JsonStorage.
+    /// </summary>
     public static class JsonStorage
     {
+        /// <summary>
+        /// The application data folder
+        /// </summary>
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "CodeTimeTracker");
 
+        /// <summary>
+        /// The data file path
+        /// </summary>
         private static readonly string DataFilePath = Path.Combine(AppDataFolder, "time-tracker-data.json");
 
+        /// <summary>
+        /// Loads this instance.
+        /// </summary>
+        /// <returns>TimeTrackerData.</returns>
         public static TimeTrackerData Load()
         {
             EnsureDirectoryExists();
@@ -37,6 +60,10 @@ namespace CodeTimeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Saves the specified data.
+        /// </summary>
+        /// <param name="data">The data.</param>
         public static void Save(TimeTrackerData data)
         {
             if (data == null) return;
@@ -59,6 +86,12 @@ namespace CodeTimeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Exports to text.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="projectId">The project identifier.</param>
         public static void ExportToTxt(string filePath, TimeTrackerData data, Guid? projectId = null)
         {
             using StreamWriter writer = new(filePath);
@@ -144,6 +177,12 @@ namespace CodeTimeTracker.Data
             writer.WriteLine("End of Report");
         }
 
+        /// <summary>
+        /// Exports to CSV.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="data">The data.</param>
+        /// <param name="projectId">The project identifier.</param>
         public static void ExportToCsv(string filePath, TimeTrackerData data, Guid? projectId = null)
         {
             using StreamWriter writer = new(filePath);
@@ -173,11 +212,19 @@ namespace CodeTimeTracker.Data
             }
         }
 
+        /// <summary>
+        /// Formats the total time.
+        /// </summary>
+        /// <param name="ts">The ts.</param>
+        /// <returns>System.String.</returns>
         private static string FormatTotalTime(TimeSpan ts)
         {
             return $"{(ts.Days * 24) + ts.Hours:D2} hours and {ts.Minutes:D2} minutes";
         }
 
+        /// <summary>
+        /// Ensures the directory exists.
+        /// </summary>
         private static void EnsureDirectoryExists()
         {
             Directory.CreateDirectory(AppDataFolder);

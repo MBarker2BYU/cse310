@@ -1,14 +1,44 @@
-﻿using CodeTimeTracker.Data.Models;
+﻿// ***********************************************************************
+// Assembly         : CodeTimeTracker
+// Author            : Matthew D. Barker
+// Created           : 01-15-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-16-2026
+// ***********************************************************************
+// <copyright file="TimeEntryForm.cs" company="ShadowWorx Systems">
+//     Copyright © 2026 Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using CodeTimeTracker.Data.Models;
 using CodeTimeTracker.Extensions;
 
 namespace CodeTimeTracker
 {
+    /// <summary>
+    /// Class TimeEntryForm.
+    /// Implements the <see cref="System.Windows.Forms.Form" />
+    /// </summary>
+    /// <seealso cref="System.Windows.Forms.Form" />
     public partial class TimeEntryForm : Form
     {
+        /// <summary>
+        /// The m data
+        /// </summary>
         private readonly TimeTrackerData m_Data;
+        /// <summary>
+        /// The m existing entry
+        /// </summary>
         private TimeEntry? m_ExistingEntry;  // null = new entry mode
 
         // Constructor for ADD new entry
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeEntryForm"/> class.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="preselectProject">The preselect project.</param>
+        /// <exception cref="System.ArgumentNullException">data</exception>
         public TimeEntryForm(TimeTrackerData data, Project? preselectProject = null)
         {
             m_Data = data ?? throw new ArgumentNullException(nameof(data));
@@ -23,6 +53,13 @@ namespace CodeTimeTracker
         }
 
         // Constructor for EDIT existing entry
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeEntryForm"/> class.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="entry">The entry.</param>
+        /// <exception cref="System.ArgumentNullException">data</exception>
+        /// <exception cref="System.ArgumentNullException">entry</exception>
         public TimeEntryForm(TimeTrackerData data, TimeEntry entry)
         {
             m_Data = data ?? throw new ArgumentNullException(nameof(data));
@@ -51,6 +88,10 @@ namespace CodeTimeTracker
             endPicker.Value = entry.EndTime ?? DateTime.Now;
         }
 
+        /// <summary>
+        /// Loads the projects and code objects.
+        /// </summary>
+        /// <param name="preselect">The preselect.</param>
         private void LoadProjectsAndCodeObjects(Project? preselect = null)
         {
             cmbProject.DisplayMember = "Name";
@@ -66,6 +107,9 @@ namespace CodeTimeTracker
             UpdateCodeObjects();
         }
 
+        /// <summary>
+        /// Updates the code objects.
+        /// </summary>
         private void UpdateCodeObjects()
         {
             cmbCodeObject.Items.Clear();
@@ -85,6 +129,11 @@ namespace CodeTimeTracker
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnSave control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (cmbCodeObject.SelectedItem == null)
@@ -136,12 +185,22 @@ namespace CodeTimeTracker
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnCancel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnNewProject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnNewProject_Click(object sender, EventArgs e)
         {
 
@@ -157,6 +216,11 @@ namespace CodeTimeTracker
 
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnNewCodeObject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnNewCodeObject_Click(object sender, EventArgs e)
         {
             if (cmbProject.SelectedItem == null || !(cmbProject.SelectedItem is Project selectedProject))

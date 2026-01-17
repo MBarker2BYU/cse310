@@ -1,10 +1,31 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿// ***********************************************************************
+// Assembly         : CodeTimeTracker
+// Author           : Matthew D. Barker
+// Created          : 01-15-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-17-2026
+// ***********************************************************************
+// <copyright file="AdvDateTimePicker.cs" company="ShadowWorx Systems">
+//     Copyright © 2026 Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System.ComponentModel;
 
 namespace CodeTimeTracker.Controls
 {
+    /// <summary>
+    /// Class AdvDateTimePicker.
+    /// Implements the <see cref="System.Windows.Forms.UserControl" />
+    /// </summary>
+    /// <seealso cref="System.Windows.Forms.UserControl" />
     public partial class AdvDateTimePicker : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdvDateTimePicker"/> class.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">Date and Time pickers must be added in designer.</exception>
         public AdvDateTimePicker()
         {
             InitializeComponent();
@@ -24,6 +45,10 @@ namespace CodeTimeTracker.Controls
             dtpTime.ValueChanged += (s, e) => OnValueChanged();
         }
 
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>The value.</value>
         [Browsable(true)]
         [Category("Behavior")]
         [Description("The combined date and time value.")]
@@ -41,15 +66,29 @@ namespace CodeTimeTracker.Controls
             }
         }
 
+        /// <summary>
+        /// Gets the date part.
+        /// </summary>
+        /// <value>The date part.</value>
         [Browsable(false)]
         public DateTime DatePart => dtpDate.Value.Date;
 
+        /// <summary>
+        /// Gets the time part.
+        /// </summary>
+        /// <value>The time part.</value>
         [Browsable(false)]
         public TimeSpan TimePart => dtpTime.Value.TimeOfDay;
 
+        /// <summary>
+        /// Occurs when [value changed].
+        /// </summary>
         public event EventHandler ValueChanged;
 
-        
+
+        /// <summary>
+        /// Called when [value changed].
+        /// </summary>
         protected virtual void OnValueChanged()
         {
             ValueChanged?.Invoke(this, EventArgs.Empty);

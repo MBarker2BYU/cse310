@@ -1,9 +1,23 @@
-﻿using System;
-using System.Linq;
+﻿// ***********************************************************************
+// Assembly         : CodeTimeTracker
+// Author           : Matthew D. Barker
+// Created          : 01-16-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-16-2026
+// ***********************************************************************
+// <copyright file="DataValidator.cs" company="ShadowWorx Systems">
+//     Copyright © 2026 Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using CodeTimeTracker.Data.Models;
 
 namespace CodeTimeTracker.Data
 {
+    /// <summary>
+    /// Class DataValidator.
+    /// </summary>
     public static class DataValidator
     {
         /// <summary>

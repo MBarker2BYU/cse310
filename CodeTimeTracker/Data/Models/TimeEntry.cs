@@ -4,7 +4,7 @@
 // Created          : 01-15-2026
 //
 // Last Modified By : Matthew D. Barker
-// Last Modified On : 01-15-2026
+// Last Modified On : 01-17-2026
 // ***********************************************************************
 // <copyright file="TimeEntry.cs" company="ShadowWorx Systems">
 //     Copyright © 2026 Matthew D. Barker. All rights reserved.
@@ -13,9 +13,6 @@
 // ***********************************************************************
 namespace CodeTimeTracker.Data.Models;
 
-/// <summary>
-/// Class TimeEntry.
-/// </summary>
 public class TimeEntry
 {
     /// <summary>
@@ -27,7 +24,7 @@ public class TimeEntry
     /// Gets or sets the code object identifier.
     /// </summary>
     /// <value>The code object identifier.</value>
-    public Guid CodeObjectId { get; set; }            // foreign key to CodeObject
+    public Guid CodeObjectId { get; set; }
     /// <summary>
     /// Gets or sets the name of the task.
     /// </summary>
@@ -42,31 +39,25 @@ public class TimeEntry
     /// Gets or sets the end time.
     /// </summary>
     /// <value>The end time.</value>
-    public DateTime? EndTime { get; set; }            // null = currently running
+    public DateTime? EndTime { get; set; }
     /// <summary>
     /// Gets or sets the notes.
     /// </summary>
     /// <value>The notes.</value>
-    public string Notes { get; set; } = string.Empty; // optional, for extra context
-
+    public string Notes { get; set; } = string.Empty;
     /// <summary>
     /// Gets or sets a value indicating whether this instance is deleted.
     /// </summary>
     /// <value><c>true</c> if this instance is deleted; otherwise, <c>false</c>.</value>
     public bool IsDeleted { get; set; } = false;
 
-    // Computed properties (not stored)
-    /// <summary>
-    /// Gets the duration.
-    /// </summary>
-    /// <value>The duration.</value>
+    // Legacy TimeSpan version - kept for full compatibility
     public TimeSpan Duration =>
         EndTime.HasValue ? EndTime.Value - StartTime : DateTime.Now - StartTime;
 
-    /// <summary>
-    /// Gets the duration formatted.
-    /// </summary>
-    /// <value>The duration formatted.</value>
-    public string DurationFormatted =>
-        $"{Duration.Hours:D2}:{Duration.Minutes:D2}:{Duration.Seconds:D2}";
+    // NEW: Duration as TimeDuration struct (meets Structures requirement)
+    public TimeDuration DurationStruct => new TimeDuration(Duration);
+
+    // Uses the struct's ToString() - output looks exactly the same as before
+    public string DurationFormatted => DurationStruct.ToString();
 }

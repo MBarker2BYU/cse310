@@ -13,6 +13,8 @@
 // ***********************************************************************
 using System.Text.Json;
 using CodeTimeTracker.Data.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CodeTimeTracker.Data
 {
@@ -87,11 +89,11 @@ namespace CodeTimeTracker.Data
         }
 
         /// <summary>
-        /// Exports to text.
+        /// Exports to text with detailed project/code object breakdown + new daily summary at the end.
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="data">The data.</param>
-        /// <param name="projectId">The project identifier.</param>
+        /// <param name="projectId">The project identifier (optional - export all if null).</param>
         public static void ExportToTxt(string filePath, TimeTrackerData data, Guid? projectId = null)
         {
             using StreamWriter writer = new(filePath);
@@ -111,6 +113,7 @@ namespace CodeTimeTracker.Data
                 return;
             }
 
+            // --- Existing detailed project/code object breakdown ---
             foreach (var project in projectsToExport.OrderBy(p => p.Name))
             {
                 writer.WriteLine($"Project: {project.Name}");
@@ -174,15 +177,63 @@ namespace CodeTimeTracker.Data
                 writer.WriteLine();
             }
 
+            // --- NEW: Daily Summary Section (across all projects) ---
+            writer.WriteLine("Daily Summary (All Projects)");
+            writer.WriteLine("─────────────────────────────────────");
+
+            // Collect all active time entries grouped by date
+            var dailyGroups = data.TimeEntries
+                .Where(e => !e.IsDeleted)
+                .GroupBy(e => DateOnly.FromDateTime(e.StartTime))
+                .OrderBy(g => g.Key);
+
+            TimeSpan grandTotal = TimeSpan.Zero;
+
+            foreach (var dayGroup in dailyGroups)
+            {
+                var dayDate = dayGroup.Key;
+                TimeSpan dayTotal = TimeSpan.Zero;
+
+                writer.WriteLine($"{dayDate:yyyy-MM-dd}");
+
+                // Group by Code Object for that day
+                var codeObjDayGroups = dayGroup
+                    .GroupBy(e => data.CodeObjects.FirstOrDefault(co => co.Id == e.CodeObjectId)?.Name ?? "Unknown")
+                    .OrderBy(g => g.Key);
+
+                foreach (var codeObjGroup in codeObjDayGroups)
+                {
+                    TimeSpan codeObjDayTotal = TimeSpan.Zero;
+                    foreach (var entry in codeObjGroup)
+                    {
+                        codeObjDayTotal += entry.Duration;
+                    }
+
+                    writer.WriteLine($"  • {codeObjGroup.Key}: {FormatTotalTime(codeObjDayTotal)}");
+                    dayTotal += codeObjDayTotal;
+                }
+
+                writer.WriteLine($"  Total for {dayDate:yyyy-MM-dd}: {FormatTotalTime(dayTotal)}");
+                writer.WriteLine();
+
+                grandTotal += dayTotal;
+            }
+
+            if (!dailyGroups.Any())
+            {
+                writer.WriteLine("No time entries recorded yet.");
+            }
+
+            writer.WriteLine($"Grand Total Across All Days: {FormatTotalTime(grandTotal)}");
+            writer.WriteLine("─────────────────────────────────────");
+            writer.WriteLine();
+
             writer.WriteLine("End of Report");
         }
 
         /// <summary>
-        /// Exports to CSV.
+        /// Exports to CSV (unchanged).
         /// </summary>
-        /// <param name="filePath">The file path.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="projectId">The project identifier.</param>
         public static void ExportToCsv(string filePath, TimeTrackerData data, Guid? projectId = null)
         {
             using StreamWriter writer = new(filePath);
@@ -215,8 +266,6 @@ namespace CodeTimeTracker.Data
         /// <summary>
         /// Formats the total time.
         /// </summary>
-        /// <param name="ts">The ts.</param>
-        /// <returns>System.String.</returns>
         private static string FormatTotalTime(TimeSpan ts)
         {
             return $"{(ts.Days * 24) + ts.Hours:D2} hours and {ts.Minutes:D2} minutes";

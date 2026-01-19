@@ -11,12 +11,13 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace SwarNet.Enums;
 
 /// <summary>
 /// Enum MessageType
 /// </summary>
-internal enum MessageType
+public enum MessageType
 {
     /// <summary>
     /// The connect request
@@ -26,6 +27,14 @@ internal enum MessageType
     /// The connect accepted
     /// </summary>
     ConnectAccepted,
+    /// <summary>
+    /// The connect rejected
+    /// </summary>
+    ConnectRejected,
+    /// <summary>
+    /// The chat message
+    /// </summary>
+    ChatMessage,
     /// <summary>
     /// The place ships
     /// </summary>
@@ -51,7 +60,11 @@ internal enum MessageType
     /// </summary>
     GameOver,
     /// <summary>
-    /// The chat
+    /// The disconnect
     /// </summary>
-    Chat
+    Disconnect,
+    /// <summary>
+    /// The error
+    /// </summary>
+    Error
 }

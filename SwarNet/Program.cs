@@ -1,3 +1,5 @@
+using SwarNet.Forms;
+
 namespace SwarNet
 {
     internal static class Program

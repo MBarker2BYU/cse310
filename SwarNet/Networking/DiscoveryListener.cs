@@ -16,7 +16,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace SwarNet
+namespace SwarNet.Networking
 {
     /// <summary>
     /// Class DiscoveryListener.
@@ -26,11 +26,11 @@ namespace SwarNet
         /// <summary>
         /// The UDP client
         /// </summary>
-        private UdpClient _udpClient;
+        private UdpClient m_UdpClient;
         /// <summary>
         /// The running
         /// </summary>
-        private bool _running;
+        private bool m_Running;
 
         /// <summary>
         /// Occurs when [on host discovered].
@@ -45,30 +45,30 @@ namespace SwarNet
         {
             try
             {
-                _udpClient = new UdpClient(discoveryPort);
-                _udpClient.EnableBroadcast = true;
-                _running = true;
+                m_UdpClient = new UdpClient(discoveryPort);
+                m_UdpClient.EnableBroadcast = true;
+                m_Running = true;
 
-                Thread listenThread = new Thread(() =>
+                var listenThread = new Thread(() =>
                 {
-                    IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                    var remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-                    while (_running)
+                    while (m_Running)
                     {
                         try
                         {
-                            byte[] data = _udpClient.Receive(ref remoteEndPoint);
-                            string message = Encoding.UTF8.GetString(data);
+                            var data = m_UdpClient.Receive(ref remoteEndPoint);
+                            var message = Encoding.UTF8.GetString(data);
 
                             if (message.StartsWith("BATTLESHIP_HOST|"))
                             {
                                 var parts = message.Split('|');
                                 if (parts.Length == 3)
                                 {
-                                    if (int.TryParse(parts[1], out int tcpPort))
+                                    if (int.TryParse(parts[1], out var tcpPort))
                                     {
-                                        string hostName = parts[2];
-                                        string ip = remoteEndPoint.Address.ToString();
+                                        var hostName = parts[2];
+                                        var ip = remoteEndPoint.Address.ToString();
 
                                         OnHostDiscovered?.Invoke(ip, tcpPort, hostName);
                                     }
@@ -96,8 +96,8 @@ namespace SwarNet
         /// </summary>
         public void Stop()
         {
-            _running = false;
-            _udpClient?.Close();
+            m_Running = false;
+            m_UdpClient?.Close();
         }
     }
 }

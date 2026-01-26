@@ -16,7 +16,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace SwarNet
+namespace SwarNet.Networking
 {
     /// <summary>
     /// Class DiscoveryBroadcaster.
@@ -26,19 +26,19 @@ namespace SwarNet
         /// <summary>
         /// The UDP client
         /// </summary>
-        private UdpClient _udpClient;
+        private UdpClient m_UdpClient;
         /// <summary>
         /// The running
         /// </summary>
-        private bool _running;
+        private bool m_Running;
         /// <summary>
         /// The discovery port
         /// </summary>
-        private readonly int _discoveryPort = 55556;
+        private readonly int m_DiscoveryPort = 55556;
         /// <summary>
         /// The identifier
         /// </summary>
-        private readonly string _identifier = "BATTLESHIP_HOST";
+        private readonly string m_Identifier = "BATTLESHIP_HOST";
 
         /// <summary>
         /// Starts broadcasting the server's presence every 5 seconds.
@@ -49,22 +49,22 @@ namespace SwarNet
         {
             try
             {
-                _udpClient = new UdpClient();
-                _udpClient.EnableBroadcast = true;
-                _running = true;
+                m_UdpClient = new UdpClient();
+                m_UdpClient.EnableBroadcast = true;
+                m_Running = true;
 
-                string message = $"{_identifier}|{tcpGamePort}|{hostName}";
+                var message = $"{m_Identifier}|{tcpGamePort}|{hostName}";
 
-                Thread broadcastThread = new Thread(() =>
+                var broadcastThread = new Thread(() =>
                 {
-                    IPEndPoint broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, _discoveryPort);
+                    var broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, m_DiscoveryPort);
 
-                    while (_running)
+                    while (m_Running)
                     {
                         try
                         {
-                            byte[] data = Encoding.UTF8.GetBytes(message);
-                            _udpClient.Send(data, data.Length, broadcastEndpoint);
+                            var data = Encoding.UTF8.GetBytes(message);
+                            m_UdpClient.Send(data, data.Length, broadcastEndpoint);
                         }
                         catch
                         {
@@ -91,8 +91,8 @@ namespace SwarNet
         /// </summary>
         public void Stop()
         {
-            _running = false;
-            _udpClient?.Close();
+            m_Running = false;
+            m_UdpClient?.Close();
         }
     }
 }

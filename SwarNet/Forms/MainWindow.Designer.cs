@@ -1,4 +1,4 @@
-﻿namespace SwarNet
+﻿namespace SwarNet.Forms
 {
     partial class MainWindow
     {

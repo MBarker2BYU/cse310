@@ -1,13 +1,14 @@
 ﻿using SwarNet.Enums;
+using SwarNet.Networking;
 
-namespace SwarNet
+namespace SwarNet.Forms
 {
     public partial class MainWindow : Form
     {
-        private GameServer _server;
-        private GameClient _client;
-        private DiscoveryBroadcaster _broadcaster;
-        private DiscoveryListener _discoveryListener;
+        private GameServer m_Server;
+        private GameClient m_Client;
+        private DiscoveryBroadcaster m_Broadcaster;
+        private DiscoveryListener m_DiscoveryListener;
         
 
         public MainWindow()
@@ -25,25 +26,25 @@ namespace SwarNet
 
         private void btnHost_Click(object sender, EventArgs e)
         {
-            if (_server != null)
+            if (m_Server != null)
             {
                 AppendLog("Server already running.");
                 return;
             }
 
-            _server = new GameServer();
-            _server.OnLogMessage += AppendLog;
-            _server.OnMessageReceived += msg =>
+            m_Server = new GameServer();
+            m_Server.OnLogMessage += AppendLog;
+            m_Server.OnMessageReceived += msg =>
             {
                 this.Invoke(() => AppendLog($"Opponent: {msg.Type} → {msg.Payload}"));
             };
 
             // New: Stop broadcast when client connects
-            _server.OnClientConnectedEvent += () =>
+            m_Server.OnClientConnectedEvent += () =>
             {
                 this.Invoke(() =>
                 {
-                    _broadcaster?.Stop();
+                    m_Broadcaster?.Stop();
                     AppendLog("Client connected – UDP broadcast stopped.");
                     btnConnect.Enabled = true;
                     btnSendChat.Enabled = true;
@@ -51,7 +52,7 @@ namespace SwarNet
             };
 
             // New: Handle client disconnect
-            _server.OnClientDisconnected += () =>
+            m_Server.OnClientDisconnected += () =>
             {
                 this.Invoke(() =>
                 {
@@ -60,10 +61,10 @@ namespace SwarNet
                 });
             };
 
-            _broadcaster = new DiscoveryBroadcaster();
-            _broadcaster.StartBroadcast(55555, Environment.MachineName);
+            m_Broadcaster = new DiscoveryBroadcaster();
+            m_Broadcaster.StartBroadcast(55555, Environment.MachineName);
 
-            _server.Start(55555);
+            m_Server.Start(55555);
 
             AppendLog("Hosting SwarNet game... Broadcasting every 5 seconds");
             btnHost.Enabled = false;
@@ -71,19 +72,19 @@ namespace SwarNet
 
         private void btnFindGames_Click(object sender, EventArgs e)
         {
-            if (_discoveryListener != null)
+            if (m_DiscoveryListener != null)
             {
                 AppendLog("Already searching...");
                 return;
             }
 
-            _discoveryListener = new DiscoveryListener();
+            m_DiscoveryListener = new DiscoveryListener();
 
-            _discoveryListener.OnHostDiscovered += (ip, port, hostName) =>
+            m_DiscoveryListener.OnHostDiscovered += (ip, port, hostName) =>
             {
                 this.Invoke(new Action(() =>
                 {
-                    string display = $"{hostName} ({ip}:{port})";
+                    var display = $"{hostName} ({ip}:{port})";
                     if (!listBoxHosts.Items.Contains(display))
                     {
                         listBoxHosts.Items.Add(display);
@@ -92,7 +93,7 @@ namespace SwarNet
                 }));
             };
 
-            _discoveryListener.StartListening();
+            m_DiscoveryListener.StartListening();
             AppendLog("Searching for SwarNet games on local network...");
         }
 
@@ -104,21 +105,21 @@ namespace SwarNet
                 return;
             }
 
-            string selected = listBoxHosts.SelectedItem.ToString();
+            var selected = listBoxHosts.SelectedItem.ToString();
             var ipPart = selected.Substring(selected.IndexOf('(') + 1).TrimEnd(')');
             var parts = ipPart.Split(':');
-            string ip = parts[0];
-            int port = int.Parse(parts[1]);
+            var ip = parts[0];
+            var port = int.Parse(parts[1]);
 
-            if (_client != null)
+            if (m_Client != null)
             {
                 AppendLog("Already connected.");
                 return;
             }
 
-            _client = new GameClient();
-            _client.OnLogMessage += AppendLog;
-            _client.OnMessageReceived += msg =>
+            m_Client = new GameClient();
+            m_Client.OnLogMessage += AppendLog;
+            m_Client.OnMessageReceived += msg =>
             {
                 this.Invoke(() => AppendLog($"Host: {msg.Type} → {msg.Payload}"));
 
@@ -130,7 +131,7 @@ namespace SwarNet
             };
 
             // New: Stop discovery listener after connect
-            _client.OnDisconnected += () =>
+            m_Client.OnDisconnected += () =>
             {
                 this.Invoke(() =>
                 {
@@ -140,9 +141,9 @@ namespace SwarNet
                 });
             };
 
-            _client.Connect(ip, port);
+            m_Client.Connect(ip, port);
 
-            _discoveryListener?.Stop();
+            m_DiscoveryListener?.Stop();
             AppendLog("Connected – stopped searching for hosts.");
 
             AppendLog($"Connecting to {selected}...");
@@ -155,17 +156,17 @@ namespace SwarNet
             if (string.IsNullOrWhiteSpace(txtChatInput.Text))
                 return;
 
-            string chatText = txtChatInput.Text.Trim();
+            var chatText = txtChatInput.Text.Trim();
             var msg = NetworkMessage.Chat(chatText);
 
-            if (_client != null)  // Client mode
+            if (m_Client != null)  // Client mode
             {
-                _client.SendMessage(msg);
+                m_Client.SendMessage(msg);
                 AppendLog($"You (Client): ChatMessage → {chatText}");
             }
-            else if (_server != null && _server.ClientConnected)  // Host mode – only if someone connected
+            else if (m_Server != null && m_Server.ClientConnected)  // Host mode – only if someone connected
             {
-                _server.SendMessage(msg);
+                m_Server.SendMessage(msg);
                 AppendLog($"You (Host): ChatMessage → {chatText}");
             }
             else
@@ -191,15 +192,15 @@ namespace SwarNet
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _client?.Disconnect();
-            _server?.Stop();
-            _broadcaster?.Stop();
-            _discoveryListener?.Stop();
+            m_Client?.Disconnect();
+            m_Server?.Stop();
+            m_Broadcaster?.Stop();
+            m_DiscoveryListener?.Stop();
 
             AppendLog("SwarNet shutting down...");
         }
 
-        private bool IsInShipPlacement = false;
+        private bool m_IsInShipPlacement = false;
         
     }
 }

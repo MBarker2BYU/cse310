@@ -14,7 +14,7 @@
 
 using SwarNet.Enums;
 
-namespace SwarNet
+namespace SwarNet.Networking
 {
     /// <summary>
     /// Core message class used for all network communication in SwarNet.
@@ -46,7 +46,7 @@ namespace SwarNet
             if (string.IsNullOrWhiteSpace(raw))
                 throw new ArgumentException("Cannot parse empty message");
 
-            var parts = raw.Split(new[] { ':' }, 2);
+            var parts = raw.Split([':'], 2);
 
             if (!Enum.TryParse<MessageType>(parts[0], ignoreCase: true, out var type))
             {

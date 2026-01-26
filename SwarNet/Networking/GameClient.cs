@@ -1,16 +1,14 @@
-﻿using SwarNet.Enums;
-using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
-using System.Threading;
+using SwarNet.Enums;
 
-namespace SwarNet
+namespace SwarNet.Networking
 {
     public class GameClient
     {
-        private TcpClient _client;
-        private NetworkStream _stream;
-        private bool _running;
+        private TcpClient m_Client;
+        private NetworkStream m_Stream;
+        private bool m_Running;
 
         public event Action<string> OnLogMessage;
         public event Action<NetworkMessage> OnMessageReceived;
@@ -20,10 +18,10 @@ namespace SwarNet
         {
             try
             {
-                _client = new TcpClient();
-                _client.Connect(hostIp, port);
-                _stream = _client.GetStream();
-                _running = true;
+                m_Client = new TcpClient();
+                m_Client.Connect(hostIp, port);
+                m_Stream = m_Client.GetStream();
+                m_Running = true;
 
                 OnLogMessage?.Invoke($"Connected to SwarNet host at {hostIp}:{port}");
 
@@ -33,7 +31,7 @@ namespace SwarNet
                     Payload = "Client ready to join"
                 });
 
-                Thread receiveThread = new Thread(ReceiveLoop);
+                var receiveThread = new Thread(ReceiveLoop);
                 receiveThread.IsBackground = true;
                 receiveThread.Start();
             }
@@ -45,29 +43,29 @@ namespace SwarNet
 
         private void ReceiveLoop()
         {
-            byte[] buffer = new byte[1024];
-            StringBuilder messageBuilder = new StringBuilder();
+            var buffer = new byte[1024];
+            var messageBuilder = new StringBuilder();
 
-            while (_running && _client?.Connected == true)
+            while (m_Running && m_Client?.Connected == true)
             {
                 try
                 {
-                    int bytesRead = _stream.Read(buffer, 0, buffer.Length);
+                    var bytesRead = m_Stream.Read(buffer, 0, buffer.Length);
                     if (bytesRead == 0)
                     {
                         OnLogMessage?.Invoke("Connection lost: Host closed the game.");
                         break;
                     }
 
-                    string received = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    var received = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     messageBuilder.Append(received);
 
-                    string data = messageBuilder.ToString();
+                    var data = messageBuilder.ToString();
                     int newlinePos;
 
                     while ((newlinePos = data.IndexOf('\n')) >= 0)
                     {
-                        string completeMessage = data.Substring(0, newlinePos).Trim();
+                        var completeMessage = data.Substring(0, newlinePos).Trim();
                         if (!string.IsNullOrEmpty(completeMessage))
                         {
                             try
@@ -89,7 +87,7 @@ namespace SwarNet
                 }
                 catch (Exception ex)
                 {
-                    if (_running)
+                    if (m_Running)
                         OnLogMessage?.Invoke($"Connection error: {ex.Message}. Host may have closed.");
                     break;
                 }
@@ -102,7 +100,7 @@ namespace SwarNet
 
         public void SendMessage(NetworkMessage message)
         {
-            if (_stream == null || !_client?.Connected == true)
+            if (m_Stream == null || !m_Client?.Connected == true)
             {
                 OnLogMessage?.Invoke("Cannot send - not connected");
                 return;
@@ -110,10 +108,10 @@ namespace SwarNet
 
             try
             {
-                string text = message.ToString() + "\n";
-                byte[] data = Encoding.UTF8.GetBytes(text);
-                _stream.Write(data, 0, data.Length);
-                _stream.Flush();
+                var text = message.ToString() + "\n";
+                var data = Encoding.UTF8.GetBytes(text);
+                m_Stream.Write(data, 0, data.Length);
+                m_Stream.Flush();
 
                 OnLogMessage?.Invoke($"[OUT] {message.Type}: {message.Payload}");
             }
@@ -125,17 +123,17 @@ namespace SwarNet
 
         public void Disconnect()
         {
-            _running = false;
+            m_Running = false;
             Cleanup();
             OnLogMessage?.Invoke("Client disconnected gracefully.");
         }
 
         private void Cleanup()
         {
-            _stream?.Close();
-            _client?.Close();
-            _stream = null;
-            _client = null;
+            m_Stream?.Close();
+            m_Client?.Close();
+            m_Stream = null;
+            m_Client = null;
         }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using SwarNet.Enums;
-using SwarNet.Models;
-using System;
-using System.Windows.Forms;
 
 namespace SwarNet
 {
@@ -11,15 +8,7 @@ namespace SwarNet
         private GameClient _client;
         private DiscoveryBroadcaster _broadcaster;
         private DiscoveryListener _discoveryListener;
-
-        private List<Ship> shipsToPlace = new List<Ship>
-        {
-            new Ship(VesselType.Carrier),
-            new Ship(VesselType.Battleship),
-            new Ship(VesselType.Destoryer),
-            new Ship(VesselType.Submarine),
-            new Ship(VesselType.PatrolBoat)
-        };
+        
 
         public MainWindow()
         {
@@ -31,20 +20,7 @@ namespace SwarNet
 
         private void SetupGameBoards()
         {
-            ownBoardPanel.CellClicked += (s, e) =>
-            {
-                AppendLog($"Own fleet: Clicked row {e.Row}, col {e.Col}");
-            };
-            ownBoardPanel.IsReadOnly = true;
-
-            opponentBoardPanel.CellClicked += (s, e) =>
-            {
-                AppendLog($"Targeting enemy: row {e.Row}, col {e.Col}");
-
-                ownBoardPanel.MarkHit(e.Row, e.Col);
-            };
-
-            AppendLog("Neon tactical grids online. Awaiting fleet deployment.");
+           
         }
 
         private void btnHost_Click(object sender, EventArgs e)
@@ -224,13 +200,6 @@ namespace SwarNet
         }
 
         private bool IsInShipPlacement = false;
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (IsInShipPlacement)
-                ownBoardPanel.EndPlacement();
-            else 
-                ownBoardPanel.StartPlacement();
-        }
+        
     }
 }

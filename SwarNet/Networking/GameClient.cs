@@ -10,9 +10,9 @@ namespace SwarNet.Networking
         private NetworkStream m_Stream;
         private bool m_Running;
 
-        public event Action<string> OnLogMessage;
-        public event Action<NetworkMessage> OnMessageReceived;
-        public event Action OnDisconnected;  // New: notify UI when connection lost
+        public event Action<string>? LogMessage;
+        public event Action<NetworkMessage>? MessageReceived;
+        public event Action? Disconnected;  // New: notify UI when connection lost
 
         public void Connect(string hostIp, int port = 55555)
         {
@@ -23,7 +23,7 @@ namespace SwarNet.Networking
                 m_Stream = m_Client.GetStream();
                 m_Running = true;
 
-                OnLogMessage?.Invoke($"Connected to SwarNet host at {hostIp}:{port}");
+                LogMessage?.Invoke($"Connected to SwarNet host at {hostIp}:{port}");
 
                 SendMessage(new NetworkMessage
                 {
@@ -37,7 +37,7 @@ namespace SwarNet.Networking
             }
             catch (Exception ex)
             {
-                OnLogMessage?.Invoke($"Connection failed: {ex.Message}");
+                LogMessage?.Invoke($"Connection failed: {ex.Message}");
             }
         }
 
@@ -53,7 +53,7 @@ namespace SwarNet.Networking
                     var bytesRead = m_Stream.Read(buffer, 0, buffer.Length);
                     if (bytesRead == 0)
                     {
-                        OnLogMessage?.Invoke("Connection lost: Host closed the game.");
+                        LogMessage?.Invoke("Connection lost: Host closed the game.");
                         break;
                     }
 
@@ -71,12 +71,12 @@ namespace SwarNet.Networking
                             try
                             {
                                 var msg = NetworkMessage.FromString(completeMessage);
-                                OnMessageReceived?.Invoke(msg);
-                                OnLogMessage?.Invoke($"[IN] {msg.Type}: {msg.Payload}");
+                                MessageReceived?.Invoke(msg);
+                                LogMessage?.Invoke($"[IN] {msg.Type}: {msg.Payload}");
                             }
                             catch (Exception ex)
                             {
-                                OnLogMessage?.Invoke($"Message parse error: {ex.Message} → {completeMessage}");
+                                LogMessage?.Invoke($"Message parse error: {ex.Message} → {completeMessage}");
                             }
                         }
 
@@ -88,13 +88,13 @@ namespace SwarNet.Networking
                 catch (Exception ex)
                 {
                     if (m_Running)
-                        OnLogMessage?.Invoke($"Connection error: {ex.Message}. Host may have closed.");
+                        LogMessage?.Invoke($"Connection error: {ex.Message}. Host may have closed.");
                     break;
                 }
             }
 
-            OnLogMessage?.Invoke("Disconnected from host.");
-            OnDisconnected?.Invoke();  // Notify UI
+            LogMessage?.Invoke("Disconnected from host.");
+            Disconnected?.Invoke();  // Notify UI
             Cleanup();
         }
 
@@ -102,7 +102,7 @@ namespace SwarNet.Networking
         {
             if (m_Stream == null || !m_Client?.Connected == true)
             {
-                OnLogMessage?.Invoke("Cannot send - not connected");
+                LogMessage?.Invoke("Cannot send - not connected");
                 return;
             }
 
@@ -113,11 +113,11 @@ namespace SwarNet.Networking
                 m_Stream.Write(data, 0, data.Length);
                 m_Stream.Flush();
 
-                OnLogMessage?.Invoke($"[OUT] {message.Type}: {message.Payload}");
+                LogMessage?.Invoke($"[OUT] {message.Type}: {message.Payload}");
             }
             catch (Exception ex)
             {
-                OnLogMessage?.Invoke($"Send error: {ex.Message}");
+                LogMessage?.Invoke($"Send error: {ex.Message}");
             }
         }
 
@@ -125,7 +125,7 @@ namespace SwarNet.Networking
         {
             m_Running = false;
             Cleanup();
-            OnLogMessage?.Invoke("Client disconnected gracefully.");
+            LogMessage?.Invoke("Client disconnected gracefully.");
         }
 
         private void Cleanup()

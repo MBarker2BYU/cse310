@@ -12,10 +12,10 @@ namespace SwarNet.Networking
         private NetworkStream m_Stream;
         private bool m_Running;
 
-        public event Action<string> OnLogMessage;
-        public event Action<NetworkMessage> OnMessageReceived;
-        public event Action OnClientConnectedEvent;     // New: when client connects
-        public event Action OnClientDisconnected;       // New: when client disconnects
+        public event Action<string>? LogMessage;
+        public event Action<NetworkMessage>? MessageReceived;
+        public event Action? ClientConnectedEvent;     // New: when client connects
+        public event Action? ClientDisconnected;       // New: when client disconnects
 
         public void Start(int port = 55555)
         {
@@ -25,8 +25,8 @@ namespace SwarNet.Networking
                 m_Listener.Start();
                 m_Running = true;
 
-                OnLogMessage?.Invoke($"SwarNet server started on port {port}. Waiting for opponent...");
-                OnLogMessage?.Invoke("UDP discovery broadcast is active (every 5 seconds)");
+                LogMessage?.Invoke($"SwarNet server started on port {port}. Waiting for opponent...");
+                LogMessage?.Invoke("UDP discovery broadcast is active (every 5 seconds)");
 
                 var acceptThread = new Thread(AcceptClientLoop);
                 acceptThread.IsBackground = true;
@@ -34,7 +34,7 @@ namespace SwarNet.Networking
             }
             catch (Exception ex)
             {
-                OnLogMessage?.Invoke($"Failed to start server: {ex.Message}");
+                LogMessage?.Invoke($"Failed to start server: {ex.Message}");
             }
         }
 
@@ -49,8 +49,8 @@ namespace SwarNet.Networking
 
                     ClientConnected = true;
 
-                    OnLogMessage?.Invoke("Opponent connected! Starting game session...");
-                    OnClientConnectedEvent?.Invoke();  // Trigger broadcast stop
+                    LogMessage?.Invoke("Opponent connected! Starting game session...");
+                    ClientConnectedEvent?.Invoke();  // Trigger broadcast stop
 
                     SendMessage(new NetworkMessage
                     {
@@ -67,7 +67,7 @@ namespace SwarNet.Networking
                 catch (Exception ex)
                 {
                     if (m_Running)
-                        OnLogMessage?.Invoke($"Accept error: {ex.Message}");
+                        LogMessage?.Invoke($"Accept error: {ex.Message}");
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace SwarNet.Networking
                     var bytesRead = m_Stream.Read(buffer, 0, buffer.Length);
                     if (bytesRead == 0)
                     {
-                        OnLogMessage?.Invoke("Connection lost: Opponent closed the game.");
+                        LogMessage?.Invoke("Connection lost: Opponent closed the game.");
                         break;
                     }
 
@@ -102,12 +102,12 @@ namespace SwarNet.Networking
                             try
                             {
                                 var msg = NetworkMessage.FromString(completeMessage);
-                                OnMessageReceived?.Invoke(msg);
-                                OnLogMessage?.Invoke($"[IN] {msg.Type}: {msg.Payload}");
+                                MessageReceived?.Invoke(msg);
+                                LogMessage?.Invoke($"[IN] {msg.Type}: {msg.Payload}");
                             }
                             catch (Exception ex)
                             {
-                                OnLogMessage?.Invoke($"Message parse error: {ex.Message} → {completeMessage}");
+                                LogMessage?.Invoke($"Message parse error: {ex.Message} → {completeMessage}");
                             }
                         }
 
@@ -119,13 +119,13 @@ namespace SwarNet.Networking
                 catch (Exception ex)
                 {
                     if (m_Running)
-                        OnLogMessage?.Invoke($"Receive error: {ex.Message}. Opponent may have closed.");
+                        LogMessage?.Invoke($"Receive error: {ex.Message}. Opponent may have closed.");
                     break;
                 }
             }
 
-            OnLogMessage?.Invoke("Opponent disconnected.");
-            OnClientDisconnected?.Invoke();  // Notify UI
+            LogMessage?.Invoke("Opponent disconnected.");
+            ClientDisconnected?.Invoke();  // Notify UI
             Cleanup();
         }
 
@@ -141,11 +141,11 @@ namespace SwarNet.Networking
                 m_Stream.Write(data, 0, data.Length);
                 m_Stream.Flush();
 
-                OnLogMessage?.Invoke($"[OUT] {message.Type}: {message.Payload}");
+                LogMessage?.Invoke($"[OUT] {message.Type}: {message.Payload}");
             }
             catch (Exception ex)
             {
-                OnLogMessage?.Invoke($"Send error: {ex.Message}");
+                LogMessage?.Invoke($"Send error: {ex.Message}");
             }
         }
 
@@ -162,7 +162,7 @@ namespace SwarNet.Networking
         {
             m_Running = false;
             Cleanup();
-            OnLogMessage?.Invoke("SwarNet server stopped.");
+            LogMessage?.Invoke("SwarNet server stopped.");
         }
     }
 }

@@ -13,6 +13,9 @@
 // ***********************************************************************
 
 using SwarNet.Enums;
+using SwarNet.Extensions;
+using SwarNet.Serialization;
+using SwarNet.Structs;
 
 namespace SwarNet.Networking
 {
@@ -93,7 +96,63 @@ namespace SwarNet.Networking
         /// </summary>
         /// <param name="coordinates">The coordinates.</param>
         /// <returns>NetworkMessage.</returns>
-        public static NetworkMessage Attack(string coordinates)
-            => new NetworkMessage { Type = MessageType.Attack, Payload = coordinates };
+        public static NetworkMessage Attack(GridCell coordinates)
+            => new NetworkMessage { Type = MessageType.Attack, Payload = coordinates.ToPayload() };
+        
+        /// <summary>
+        /// Hits the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage HitMessage(string message = "It's a hit!")
+            => new NetworkMessage { Type = MessageType.Hit, Payload = message };
+
+        /// <summary>
+        /// Misses the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage MissMessage(string message = "It's a miss!")
+            => new NetworkMessage { Type = MessageType.Miss, Payload = message };
+
+        /// <summary>
+        /// Games the over.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage GameOver(string message)
+            => new NetworkMessage { Type = MessageType.GameOver, Payload = message };
+
+        /// <summary>
+        /// Players the ready.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage PlayerReady(Player player)
+            => new NetworkMessage { Type = MessageType.Ready, Payload = player.ToPayload()};
+
+        /// <summary>
+        /// Ships the sunk.
+        /// </summary>
+        /// <param name="shipType">Type of the ship.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage ShipSunk(ShipType shipType)
+            => new NetworkMessage { Type = MessageType.Sunk, Payload = shipType.ToString() };
+
+        /// <summary>
+        /// Places the ships.
+        /// </summary>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage PlaceShips(BattleFieldSITREP sitrep)
+            => new NetworkMessage { Type = MessageType.PlaceShips, Payload = sitrep.ToPayload()};
+
+        /// <summary>
+        /// Sitreps the specified sitrep.
+        /// </summary>
+        /// <param name="sitrep">The sitrep.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage SITREP(BattleFieldSITREP sitrep)
+            => new NetworkMessage { Type = MessageType.SITREP, Payload = sitrep.ToPayload() };
+
     }
 }

@@ -37,6 +37,9 @@
             rtbLog = new RichTextBox();
             lblLogTitle = new Label();
             lblHosts = new Label();
+            fleetAttackBoard = new SwarNet.Controls.FleetGameBoard();
+            fleetStatusBoard = new SwarNet.Controls.FleetGameBoard();
+            lblTurn = new Label();
             SuspendLayout();
             // 
             // btnHost
@@ -123,11 +126,44 @@
             lblHosts.TabIndex = 8;
             lblHosts.Text = "Available SwarNet Hosts";
             // 
+            // fleetAttackBoard
+            // 
+            fleetAttackBoard.BackColor = Color.FromArgb(15, 15, 35);
+            fleetAttackBoard.HoverEnabled = false;
+            fleetAttackBoard.IsAttackBoard = true;
+            fleetAttackBoard.Location = new Point(846, 51);
+            fleetAttackBoard.Name = "fleetAttackBoard";
+            fleetAttackBoard.Size = new Size(400, 400);
+            fleetAttackBoard.TabIndex = 9;
+            // 
+            // fleetStatusBoard
+            // 
+            fleetStatusBoard.BackColor = Color.FromArgb(15, 15, 35);
+            fleetStatusBoard.HoverEnabled = false;
+            fleetStatusBoard.IsAttackBoard = false;
+            fleetStatusBoard.Location = new Point(440, 51);
+            fleetStatusBoard.Name = "fleetStatusBoard";
+            fleetStatusBoard.Size = new Size(400, 400);
+            fleetStatusBoard.TabIndex = 10;
+            // 
+            // lblTurn
+            // 
+            lblTurn.AutoSize = true;
+            lblTurn.Font = new Font("Comic Sans MS", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTurn.Location = new Point(440, 17);
+            lblTurn.Name = "lblTurn";
+            lblTurn.Size = new Size(84, 23);
+            lblTurn.TabIndex = 11;
+            lblTurn.Text = "Standby...";
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1306, 463);
+            Controls.Add(lblTurn);
+            Controls.Add(fleetAttackBoard);
+            Controls.Add(fleetStatusBoard);
             Controls.Add(lblHosts);
             Controls.Add(lblLogTitle);
             Controls.Add(rtbLog);
@@ -159,5 +195,8 @@
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.Label lblLogTitle;
         private System.Windows.Forms.Label lblHosts;
+        private Controls.FleetGameBoard fleetAttackBoard;
+        private Controls.FleetGameBoard fleetStatusBoard;
+        private Label lblTurn;
     }
 }

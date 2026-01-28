@@ -1,4 +1,5 @@
 ﻿using SwarNet.Enums;
+using SwarNet.GameLogic;
 using SwarNet.Networking;
 
 namespace SwarNet.Forms
@@ -9,22 +10,18 @@ namespace SwarNet.Forms
         private GameClient m_Client;
         private DiscoveryBroadcaster m_Broadcaster;
         private DiscoveryListener m_DiscoveryListener;
-        
+
+        private GameHost m_GameHost;
+        private GameSession m_GameSession;
+
 
         public MainWindow()
         {
             InitializeComponent();
             btnSendChat.Enabled = false;
-
-            SetupGameBoards();
         }
 
-        private void SetupGameBoards()
-        {
-           
-        }
-
-        private void btnHost_Click(object sender, EventArgs e)
+        private void btnHost_Click(object sender, System.EventArgs e)
         {
             if (m_Server != null)
             {
@@ -33,14 +30,15 @@ namespace SwarNet.Forms
             }
 
             m_Server = new GameServer();
-            m_Server.OnLogMessage += AppendLog;
-            m_Server.OnMessageReceived += msg =>
+
+            m_Server.LogMessage += AppendLog;
+            m_Server.MessageReceived += msg =>
             {
                 this.Invoke(() => AppendLog($"Opponent: {msg.Type} → {msg.Payload}"));
             };
 
             // New: Stop broadcast when client connects
-            m_Server.OnClientConnectedEvent += () =>
+            m_Server.ClientConnectedEvent += () =>
             {
                 this.Invoke(() =>
                 {
@@ -48,11 +46,13 @@ namespace SwarNet.Forms
                     AppendLog("Client connected – UDP broadcast stopped.");
                     btnConnect.Enabled = true;
                     btnSendChat.Enabled = true;
+
+                    m_GameHost = new GameHost(m_Server, fleetAttackBoard, fleetStatusBoard, lblTurn);
                 });
             };
 
             // New: Handle client disconnect
-            m_Server.OnClientDisconnected += () =>
+            m_Server.ClientDisconnected += () =>
             {
                 this.Invoke(() =>
                 {
@@ -70,7 +70,7 @@ namespace SwarNet.Forms
             btnHost.Enabled = false;
         }
 
-        private void btnFindGames_Click(object sender, EventArgs e)
+        private void btnFindGames_Click(object sender, System.EventArgs e)
         {
             if (m_DiscoveryListener != null)
             {
@@ -97,7 +97,7 @@ namespace SwarNet.Forms
             AppendLog("Searching for SwarNet games on local network...");
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void btnConnect_Click(object sender, System.EventArgs e)
         {
             if (listBoxHosts.SelectedItem == null)
             {
@@ -118,8 +118,11 @@ namespace SwarNet.Forms
             }
 
             m_Client = new GameClient();
-            m_Client.OnLogMessage += AppendLog;
-            m_Client.OnMessageReceived += msg =>
+
+            m_GameSession = new GameSession(m_Client, fleetAttackBoard, fleetStatusBoard, lblTurn);
+
+            m_Client.LogMessage += AppendLog;
+            m_Client.MessageReceived += msg =>
             {
                 this.Invoke(() => AppendLog($"Host: {msg.Type} → {msg.Payload}"));
 
@@ -131,7 +134,7 @@ namespace SwarNet.Forms
             };
 
             // New: Stop discovery listener after connect
-            m_Client.OnDisconnected += () =>
+            m_Client.Disconnected += () =>
             {
                 this.Invoke(() =>
                 {
@@ -151,7 +154,7 @@ namespace SwarNet.Forms
             btnSendChat.Enabled = true;
         }
 
-        private void btnSendChat_Click(object sender, EventArgs e)
+        private void btnSendChat_Click(object sender, System.EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtChatInput.Text))
                 return;
@@ -201,6 +204,5 @@ namespace SwarNet.Forms
         }
 
         private bool m_IsInShipPlacement = false;
-        
     }
 }

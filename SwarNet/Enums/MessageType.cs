@@ -40,6 +40,10 @@ public enum MessageType
     /// </summary>
     PlaceShips,
     /// <summary>
+    /// The ready
+    /// </summary>
+    Ready,
+    /// <summary>
     /// The attack
     /// </summary>
     Attack,
@@ -66,5 +70,9 @@ public enum MessageType
     /// <summary>
     /// The error
     /// </summary>
-    Error
+    Error,
+    /// <summary>
+    /// The sitrep
+    /// </summary>
+    SITREP
 }

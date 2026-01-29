@@ -7,7 +7,7 @@
 // Last Modified On : 01-17-2026
 // ***********************************************************************
 // <copyright file="NetworkMessage.cs" company="SwarNet">
-//     Copyright (c) ShadowWorx Systems, LLC. All rights reserved.
+//     Copyright (c) Matthew D. Barker. All rights reserved.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************

@@ -141,7 +141,7 @@ public class GameSession
             m_FleetStatusBoard.PostSITREP(sitrep);
 
             if (sitrep.ShotReport != ShotReport.None)
-                m_FleetAttackBoard.OverlayMessage =
+                m_FleetStatusBoard.OverlayMessage =
                     sitrep.ShotReport == ShotReport.Hit ? m_TextResources.HitText : m_TextResources.MissText;
         });
 

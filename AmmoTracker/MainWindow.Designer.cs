@@ -29,140 +29,177 @@
         private void InitializeComponent()
         {
             dataGridView1 = new DataGridView();
-            comboBox1 = new ComboBox();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
-            textBox3 = new TextBox();
-            button1 = new Button();
-            button2 = new Button();
-            button3 = new Button();
-            button4 = new Button();
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
+            cboType = new ComboBox();
+            txtSearch = new TextBox();
+            btnAdd = new Button();
+            btnUpdate = new Button();
+            btnDelete = new Button();
+            btnRefresh = new Button();
+            lblCount = new Label();
+            lblTotal = new Label();
+            lblAlert = new Label();
+            dtpDate = new DateTimePicker();
+            nudRounds = new NumericUpDown();
+            nudCost = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudRounds).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudCost).BeginInit();
             SuspendLayout();
             // 
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(468, 89);
+            dataGridView1.Location = new Point(602, 146);
+            dataGridView1.Margin = new Padding(4);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(240, 150);
+            dataGridView1.Size = new Size(309, 210);
             dataGridView1.TabIndex = 0;
             // 
-            // comboBox1
+            // cboType
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(566, 36);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(121, 23);
-            comboBox1.TabIndex = 1;
+            cboType.FormattingEnabled = true;
+            cboType.Location = new Point(602, 50);
+            cboType.Margin = new Padding(4);
+            cboType.Name = "cboType";
+            cboType.Size = new Size(307, 29);
+            cboType.TabIndex = 1;
             // 
-            // textBox1
+            // txtSearch
             // 
-            textBox1.Location = new Point(130, 136);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 2;
+            txtSearch.Location = new Point(721, 426);
+            txtSearch.Margin = new Padding(4);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(127, 29);
+            txtSearch.TabIndex = 2;
             // 
-            // textBox2
+            // btnAdd
             // 
-            textBox2.Location = new Point(130, 165);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 3;
+            btnAdd.Location = new Point(71, 381);
+            btnAdd.Margin = new Padding(4);
+            btnAdd.Name = "btnAdd";
+            btnAdd.Size = new Size(96, 32);
+            btnAdd.TabIndex = 5;
+            btnAdd.Text = "Add";
+            btnAdd.UseVisualStyleBackColor = true;
+            btnAdd.Click += btnAdd_Click;
             // 
-            // textBox3
+            // btnUpdate
             // 
-            textBox3.Location = new Point(130, 194);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 4;
+            btnUpdate.Location = new Point(175, 381);
+            btnUpdate.Margin = new Padding(4);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new Size(96, 32);
+            btnUpdate.TabIndex = 6;
+            btnUpdate.Text = "Update";
+            btnUpdate.UseVisualStyleBackColor = true;
+            btnUpdate.Click += btnUpdate_Click;
             // 
-            // button1
+            // btnDelete
             // 
-            button1.Location = new Point(55, 272);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 5;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
+            btnDelete.Location = new Point(279, 381);
+            btnDelete.Margin = new Padding(4);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(96, 32);
+            btnDelete.TabIndex = 7;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
             // 
-            // button2
+            // btnRefresh
             // 
-            button2.Location = new Point(217, 272);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 6;
-            button2.Text = "button2";
-            button2.UseVisualStyleBackColor = true;
+            btnRefresh.Location = new Point(564, 435);
+            btnRefresh.Margin = new Padding(4);
+            btnRefresh.Name = "btnRefresh";
+            btnRefresh.Size = new Size(96, 32);
+            btnRefresh.TabIndex = 8;
+            btnRefresh.Text = "Refresh";
+            btnRefresh.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // lblCount
             // 
-            button3.Location = new Point(136, 272);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 7;
-            button3.Text = "button3";
-            button3.UseVisualStyleBackColor = true;
+            lblCount.AutoSize = true;
+            lblCount.Location = new Point(184, 109);
+            lblCount.Margin = new Padding(4, 0, 4, 0);
+            lblCount.Name = "lblCount";
+            lblCount.Size = new Size(52, 21);
+            lblCount.TabIndex = 9;
+            lblCount.Text = "label1";
             // 
-            // button4
+            // lblTotal
             // 
-            button4.Location = new Point(298, 272);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 23);
-            button4.TabIndex = 8;
-            button4.Text = "button4";
-            button4.UseVisualStyleBackColor = true;
+            lblTotal.AutoSize = true;
+            lblTotal.Location = new Point(185, 59);
+            lblTotal.Margin = new Padding(4, 0, 4, 0);
+            lblTotal.Name = "lblTotal";
+            lblTotal.Size = new Size(52, 21);
+            lblTotal.TabIndex = 10;
+            lblTotal.Text = "label2";
             // 
-            // label1
+            // lblAlert
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(143, 78);
-            label1.Name = "label1";
-            label1.Size = new Size(38, 15);
-            label1.TabIndex = 9;
-            label1.Text = "label1";
+            lblAlert.AutoSize = true;
+            lblAlert.Location = new Point(350, 55);
+            lblAlert.Margin = new Padding(4, 0, 4, 0);
+            lblAlert.Name = "lblAlert";
+            lblAlert.Size = new Size(53, 21);
+            lblAlert.TabIndex = 11;
+            lblAlert.Text = "{Alert}";
             // 
-            // label2
+            // dtpDate
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(144, 42);
-            label2.Name = "label2";
-            label2.Size = new Size(38, 15);
-            label2.TabIndex = 10;
-            label2.Text = "label2";
+            dtpDate.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            dtpDate.Format = DateTimePickerFormat.Short;
+            dtpDate.Location = new Point(404, 182);
+            dtpDate.Margin = new Padding(4);
+            dtpDate.Name = "dtpDate";
+            dtpDate.Size = new Size(142, 29);
+            dtpDate.TabIndex = 12;
             // 
-            // label3
+            // nudRounds
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(272, 39);
-            label3.Name = "label3";
-            label3.Size = new Size(38, 15);
-            label3.TabIndex = 11;
-            label3.Text = "label3";
+            nudRounds.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            nudRounds.Location = new Point(358, 298);
+            nudRounds.Name = "nudRounds";
+            nudRounds.Size = new Size(77, 29);
+            nudRounds.TabIndex = 13;
+            nudRounds.TextAlign = HorizontalAlignment.Center;
             // 
-            // Form1
+            // nudCost
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            nudCost.DecimalPlaces = 2;
+            nudCost.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            nudCost.Location = new Point(358, 335);
+            nudCost.Name = "nudCost";
+            nudCost.Size = new Size(77, 29);
+            nudCost.TabIndex = 14;
+            nudCost.TextAlign = HorizontalAlignment.Center;
+            // 
+            // MainWindow
+            // 
+            AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
-            Controls.Add(textBox1);
-            Controls.Add(comboBox1);
+            ClientSize = new Size(1029, 630);
+            Controls.Add(nudCost);
+            Controls.Add(nudRounds);
+            Controls.Add(dtpDate);
+            Controls.Add(lblAlert);
+            Controls.Add(lblTotal);
+            Controls.Add(lblCount);
+            Controls.Add(btnRefresh);
+            Controls.Add(btnDelete);
+            Controls.Add(btnUpdate);
+            Controls.Add(btnAdd);
+            Controls.Add(txtSearch);
+            Controls.Add(cboType);
             Controls.Add(dataGridView1);
-            Name = "Form1";
-            Text = "Form1";
+            Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Margin = new Padding(4);
+            Name = "MainWindow";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "AmmoTracker";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudRounds).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudCost).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -170,16 +207,19 @@
         #endregion
 
         private DataGridView dataGridView1;
-        private ComboBox comboBox1;
-        private TextBox textBox1;
+        private ComboBox cboType;
+        private TextBox txtSearch;
         private TextBox textBox2;
         private TextBox textBox3;
-        private Button button1;
-        private Button button2;
-        private Button button3;
-        private Button button4;
-        private Label label1;
-        private Label label2;
-        private Label label3;
+        private Button btnAdd;
+        private Button btnUpdate;
+        private Button btnDelete;
+        private Button btnRefresh;
+        private Label lblCount;
+        private Label lblTotal;
+        private Label lblAlert;
+        private DateTimePicker dtpDate;
+        private NumericUpDown nudRounds;
+        private NumericUpDown nudCost;
     }
 }

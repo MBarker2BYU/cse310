@@ -61,7 +61,7 @@ public class GameSession
     }
 
     /// <summary>
-    /// Disconnecteds this instance.
+    /// Instance Disconnect Event
     /// </summary>
     private void Disconnected()
     {

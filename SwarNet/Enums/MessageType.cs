@@ -74,5 +74,9 @@ public enum MessageType
     /// <summary>
     /// The sitrep
     /// </summary>
-    SITREP
+    SITREP,
+    /// <summary>
+    /// The text resources
+    /// </summary>
+    TextResources
 }

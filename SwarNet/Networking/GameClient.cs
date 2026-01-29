@@ -1,19 +1,58 @@
-﻿using System.Net.Sockets;
+﻿// ***********************************************************************
+// Assembly         : SwarNet
+// Author           : Matthew D. Barker
+// Created          : 01-17-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-26-2026
+// ***********************************************************************
+// <copyright file="GameClient.cs" company="SwarNet">
+//     Copyright (c) Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System.Net.Sockets;
 using System.Text;
 using SwarNet.Enums;
 
 namespace SwarNet.Networking
 {
+    /// <summary>
+    /// Class GameClient.
+    /// </summary>
     public class GameClient
     {
+        /// <summary>
+        /// The m client
+        /// </summary>
         private TcpClient m_Client;
+        /// <summary>
+        /// The m stream
+        /// </summary>
         private NetworkStream m_Stream;
+        /// <summary>
+        /// The m running
+        /// </summary>
         private bool m_Running;
 
+        /// <summary>
+        /// Occurs when [log message].
+        /// </summary>
         public event Action<string>? LogMessage;
+        /// <summary>
+        /// Occurs when [message received].
+        /// </summary>
         public event Action<NetworkMessage>? MessageReceived;
+        /// <summary>
+        /// Occurs when [disconnected].
+        /// </summary>
         public event Action? Disconnected;  // New: notify UI when connection lost
 
+        /// <summary>
+        /// Connects the specified host ip.
+        /// </summary>
+        /// <param name="hostIp">The host ip.</param>
+        /// <param name="port">The port.</param>
         public void Connect(string hostIp, int port = 55555)
         {
             try
@@ -41,6 +80,9 @@ namespace SwarNet.Networking
             }
         }
 
+        /// <summary>
+        /// Receives the loop.
+        /// </summary>
         private void ReceiveLoop()
         {
             var buffer = new byte[1024];
@@ -98,6 +140,10 @@ namespace SwarNet.Networking
             Cleanup();
         }
 
+        /// <summary>
+        /// Sends the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void SendMessage(NetworkMessage message)
         {
             if (m_Stream == null || !m_Client?.Connected == true)
@@ -121,6 +167,9 @@ namespace SwarNet.Networking
             }
         }
 
+        /// <summary>
+        /// Disconnects this instance.
+        /// </summary>
         public void Disconnect()
         {
             m_Running = false;
@@ -128,6 +177,9 @@ namespace SwarNet.Networking
             LogMessage?.Invoke("Client disconnected gracefully.");
         }
 
+        /// <summary>
+        /// Cleanups this instance.
+        /// </summary>
         private void Cleanup()
         {
             m_Stream?.Close();

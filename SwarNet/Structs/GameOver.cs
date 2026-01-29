@@ -6,28 +6,28 @@
 // Last Modified By : Matthew D. Barker
 // Last Modified On : 01-28-2026
 // ***********************************************************************
-// <copyright file="ControlExtensions.cs" company="SwarNet">
+// <copyright file="GameOver.cs" company="SwarNet">
 //     Copyright (c) Matthew D. Barker. All rights reserved.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-namespace SwarNet.CrossThread;
+using SwarNet.Enums;
+
+namespace SwarNet.Structs;
 
 /// <summary>
-/// Class ControlExtensions.
+/// Struct GameOver
 /// </summary>
-public static class ControlExtensions
+public struct GameOver
 {
     /// <summary>
-    /// Invokes if required.
+    /// Gets the winner.
     /// </summary>
-    /// <param name="control">The control.</param>
-    /// <param name="action">The action.</param>
-    public static void InvokeIfRequired(this Control control, Action action)
-    {
-        if (control.InvokeRequired)
-            control.Invoke(action);
-        else
-            action();
-    }
+    /// <value>The winner.</value>
+    public Player Winner { get; init; }
+    /// <summary>
+    /// Gets the loser.
+    /// </summary>
+    /// <value>The loser.</value>
+    public Player Loser { get; init; }
 }

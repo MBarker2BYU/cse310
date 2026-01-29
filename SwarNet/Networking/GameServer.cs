@@ -1,22 +1,66 @@
-﻿using System.Net;
+﻿// ***********************************************************************
+// Assembly         : SwarNet
+// Author           : Matthew D. Barker
+// Created          : 01-17-2026
+//
+// Last Modified By : Matthew D. Barker
+// Last Modified On : 01-26-2026
+// ***********************************************************************
+// <copyright file="GameServer.cs" company="SwarNet">
+//     Copyright (c) Matthew D. Barker. All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using SwarNet.Enums;
 
 namespace SwarNet.Networking
 {
+    /// <summary>
+    /// Class GameServer.
+    /// </summary>
     public class GameServer
     {
+        /// <summary>
+        /// The m listener
+        /// </summary>
         private TcpListener m_Listener;
+        /// <summary>
+        /// The m client
+        /// </summary>
         private TcpClient m_Client;
+        /// <summary>
+        /// The m stream
+        /// </summary>
         private NetworkStream m_Stream;
+        /// <summary>
+        /// The m running
+        /// </summary>
         private bool m_Running;
 
+        /// <summary>
+        /// Occurs when [log message].
+        /// </summary>
         public event Action<string>? LogMessage;
+        /// <summary>
+        /// Occurs when [message received].
+        /// </summary>
         public event Action<NetworkMessage>? MessageReceived;
+        /// <summary>
+        /// Occurs when [client connected event].
+        /// </summary>
         public event Action? ClientConnectedEvent;     // New: when client connects
+        /// <summary>
+        /// Occurs when [client disconnected].
+        /// </summary>
         public event Action? ClientDisconnected;       // New: when client disconnects
 
+        /// <summary>
+        /// Starts the specified port.
+        /// </summary>
+        /// <param name="port">The port.</param>
         public void Start(int port = 55555)
         {
             try
@@ -38,6 +82,9 @@ namespace SwarNet.Networking
             }
         }
 
+        /// <summary>
+        /// Accepts the client loop.
+        /// </summary>
         private void AcceptClientLoop()
         {
             while (m_Running)
@@ -72,6 +119,9 @@ namespace SwarNet.Networking
             }
         }
 
+        /// <summary>
+        /// Receives the loop.
+        /// </summary>
         private void ReceiveLoop()
         {
             var buffer = new byte[1024];
@@ -129,6 +179,10 @@ namespace SwarNet.Networking
             Cleanup();
         }
 
+        /// <summary>
+        /// Sends the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void SendMessage(NetworkMessage message)
         {
             if (m_Stream == null || !m_Client?.Connected == true)
@@ -149,8 +203,15 @@ namespace SwarNet.Networking
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether [client connected].
+        /// </summary>
+        /// <value><c>true</c> if [client connected]; otherwise, <c>false</c>.</value>
         public bool ClientConnected { get; private set; } = false;
 
+        /// <summary>
+        /// Cleanups this instance.
+        /// </summary>
         private void Cleanup()
         {
             m_Stream?.Close();
@@ -158,6 +219,9 @@ namespace SwarNet.Networking
             m_Listener?.Stop();
         }
 
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
         public void Stop()
         {
             m_Running = false;

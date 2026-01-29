@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// Assembly         : SwarNet
+// Assembly       : SwarNet
 // Author           : Matthew D. Barker
 // Created          : 01-17-2026
 //
@@ -13,7 +13,7 @@
 // ***********************************************************************
 
 using SwarNet.Enums;
-using SwarNet.Extensions;
+using SwarNet.Models;
 using SwarNet.Serialization;
 using SwarNet.Structs;
 
@@ -120,7 +120,7 @@ namespace SwarNet.Networking
         /// </summary>
         /// <param name="message">The message.</param>
         /// <returns>NetworkMessage.</returns>
-        public static NetworkMessage GameOver(string message)
+        public static NetworkMessage GameOver(string message = "Game Over!")
             => new NetworkMessage { Type = MessageType.GameOver, Payload = message };
 
         /// <summary>
@@ -154,5 +154,12 @@ namespace SwarNet.Networking
         public static NetworkMessage SITREP(BattleFieldSITREP sitrep)
             => new NetworkMessage { Type = MessageType.SITREP, Payload = sitrep.ToPayload() };
 
+        /// <summary>
+        /// Texts the resources.
+        /// </summary>
+        /// <param name="resources">The resources.</param>
+        /// <returns>NetworkMessage.</returns>
+        public static NetworkMessage TextResources(TextResources resources)
+            => new NetworkMessage { Type = MessageType.TextResources, Payload = resources.ToPayload() };
     }
 }

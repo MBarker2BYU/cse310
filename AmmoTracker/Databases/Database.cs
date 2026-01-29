@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System.Data;
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
 
@@ -41,56 +42,25 @@ public class Database
         CreateDatabase();
     }
 
-    /// <summary>
-    /// Creates the database.
-    /// </summary>
-    public void CreateDatabase()
+    private void CreateDatabase()
     {
-        m_Connection.Open();
-        using var transaction = m_Connection.BeginTransaction();  // Optional: atomic creation
-        using var cmd = m_Connection.CreateCommand();
-
-        // Table 1: AmmoTypes
-        cmd.CommandText = @"
-                CREATE TABLE IF NOT EXISTS AmmoTypes (
-                    TypeID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Caliber TEXT NOT NULL,
-                    Grain REAL,
-                    Manufacturer TEXT
-                )";
-        cmd.ExecuteNonQuery();
-
-        // Table 2: Lots
-        cmd.CommandText = @"
-                CREATE TABLE IF NOT EXISTS Lots (
-                    LotID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    TypeID INTEGER NOT NULL,
-                    PurchaseDate TEXT,
-                    Rounds INTEGER NOT NULL,
-                    CostPerRound REAL,
-                    FOREIGN KEY(TypeID) REFERENCES AmmoTypes(TypeID)
-                )";
-        cmd.ExecuteNonQuery();
-
-        // Seed example types if empty
-        cmd.CommandText = "SELECT COUNT(*) FROM AmmoTypes";
-        var count = (long)(cmd.ExecuteScalar() ?? 0L);
-
-        if (count == 0)
+        try
         {
-            cmd.CommandText = @"
-                    INSERT INTO AmmoTypes (Caliber, Grain, Manufacturer) 
-                    VALUES 
-                        ('9mm', 124, 'Federal'),
-                        ('5.56', 55, 'PMC')";
-            cmd.ExecuteNonQuery();
+            m_Connection.Open();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        finally
+        {
+            if(m_Connection.State == ConnectionState.Open) 
+                m_Connection.Close();
         }
 
-        transaction.Commit();
-        m_Connection.Close();
     }
 
-    
 
     public CRUD CRUD { get; }
 }

@@ -15,7 +15,6 @@
 using AmmoTracker.Models;
 using Microsoft.Data.Sqlite;
 using System.Data;
-using System.Data.Common;
 
 namespace AmmoTracker.Databases;
 
@@ -299,19 +298,7 @@ public class CRUD(SqliteConnection connection)
 
         cmd.ExecuteNonQuery();
     }
-
-    //// DELETE: Remove a specific purchase
-    //public void DeletePurchase(long purchaseId)
-    //{
-    //    if (m_Connection!.State != ConnectionState.Open)
-    //        m_Connection.Open();
-
-    //    using var cmd = m_Connection.CreateCommand();
-    //    cmd.CommandText = "DELETE FROM Purchases WHERE PurchaseID = @id";
-    //    cmd.Parameters.AddWithValue("@id", purchaseId);
-    //    cmd.ExecuteNonQuery();
-    //}
-
+    
     // UPDATE: Update MinimumThreshold on an AmmoType
     public void UpdateMinimumThreshold(long typeId, long newThreshold)
     {
@@ -395,7 +382,7 @@ public class CRUD(SqliteConnection connection)
         using var cmd = m_Connection.CreateCommand();
 
         cmd.CommandText = "SELECT COALESCE(SUM(RoundsAdded), 0) FROM Purchases";
-        long totalRounds = Convert.ToInt64(cmd.ExecuteScalar());
+        var totalRounds = Convert.ToInt64(cmd.ExecuteScalar());
 
         cmd.CommandText = @"
                 SELECT COUNT(*)
@@ -403,7 +390,7 @@ public class CRUD(SqliteConnection connection)
                 LEFT JOIN Purchases p ON t.TypeID = p.TypeID
                 GROUP BY t.TypeID
                 HAVING COALESCE(SUM(p.RoundsAdded), 0) < t.MinimumThreshold";
-        long lowStockTypes = Convert.ToInt64(cmd.ExecuteScalar());
+        var lowStockTypes = Convert.ToInt64(cmd.ExecuteScalar());
 
         return (totalRounds, lowStockTypes);
     }
@@ -515,6 +502,127 @@ public class CRUD(SqliteConnection connection)
             {
                 Id = reader.GetInt64(0),
                 Name = reader.GetString(1)
+            });
+        }
+
+        return results;
+    }
+
+    public List<string> GetDistinctLotNumbers()
+    {
+        var results = new List<string>();
+
+        if (m_Connection!.State != ConnectionState.Open)
+            m_Connection.Open();
+
+        using var cmd = m_Connection.CreateCommand();
+        cmd.CommandText = @"
+        SELECT DISTINCT LotNumber
+        FROM Purchases
+        WHERE LotNumber IS NOT NULL AND LotNumber != ''
+        ORDER BY LotNumber ASC";
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(reader.GetString(0));
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// Gets the aggregated inventory filtered by any combination of manufacturer, caliber, grain, date range, and lot number.
+    /// </summary>
+    /// <param name="filter">The filter criteria (null or empty fields are ignored).</param>
+    /// <returns>List of filtered InventoryItem objects.</returns>
+    public List<InventoryItem> GetInventoryByFilter(InventoryFilter filter)
+    {
+        var results = new List<InventoryItem>();
+
+        if (m_Connection!.State != ConnectionState.Open)
+            m_Connection.Open();
+
+        using var cmd = m_Connection.CreateCommand();
+
+        cmd.CommandText = @"
+        SELECT
+            t.TypeID,
+            m.ManufacturerName,
+            c.CaliberName,
+            g.GrainValue,
+            COALESCE(SUM(p.RoundsAdded), 0) AS CurrentRounds,
+            t.MinimumThreshold,
+            CASE
+                WHEN COALESCE(SUM(p.RoundsAdded), 0) < t.MinimumThreshold THEN 'Low'
+                ELSE 'OK'
+            END AS Status,
+            ROUND(COALESCE(SUM(p.RoundsAdded * p.CostPerRound), 0), 2) AS TotalValue
+        FROM AmmoTypes t
+        LEFT JOIN Purchases p ON t.TypeID = p.TypeID
+        INNER JOIN Manufacturers m ON t.ManufacturerID = m.ManufacturerID
+        INNER JOIN Calibers c ON t.CaliberID = c.CaliberID
+        INNER JOIN Grains g ON t.GrainID = g.GrainID
+        WHERE 1=1";
+
+        // Manufacturer
+        if (filter?.ManufacturerId.HasValue == true && filter.ManufacturerId.Value > 0)
+        {
+            cmd.CommandText += " AND m.ManufacturerID = @manu";
+            cmd.Parameters.AddWithValue("@manu", filter.ManufacturerId.Value);
+        }
+
+        // Caliber
+        if (filter?.CaliberId.HasValue == true && filter.CaliberId.Value > 0)
+        {
+            cmd.CommandText += " AND c.CaliberID = @cal";
+            cmd.Parameters.AddWithValue("@cal", filter.CaliberId.Value);
+        }
+
+        // Grain
+        if (filter?.GrainId.HasValue == true && filter.GrainId.Value > 0)
+        {
+            cmd.CommandText += " AND g.GrainID = @grain";
+            cmd.Parameters.AddWithValue("@grain", filter.GrainId.Value);
+        }
+
+        // Date range (on Purchases)
+        if (filter?.StartDate.HasValue == true)
+        {
+            cmd.CommandText += " AND p.PurchaseDate >= @start";
+            cmd.Parameters.AddWithValue("@start", filter.StartDate.Value.ToString("yyyy-MM-dd"));
+        }
+
+        if (filter?.EndDate.HasValue == true)
+        {
+            cmd.CommandText += " AND p.PurchaseDate <= @end";
+            cmd.Parameters.AddWithValue("@end", filter.EndDate.Value.ToString("yyyy-MM-dd"));
+        }
+
+        // Lot number (partial match)
+        if (!string.IsNullOrWhiteSpace(filter?.LotNumber))
+        {
+            cmd.CommandText += " AND p.LotNumber LIKE @lot";
+            cmd.Parameters.AddWithValue("@lot", "%" + filter.LotNumber.Trim() + "%");
+        }
+
+        cmd.CommandText += @"
+        GROUP BY t.TypeID, m.ManufacturerName, c.CaliberName, g.GrainValue, t.MinimumThreshold
+        ORDER BY CurrentRounds DESC;";
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            results.Add(new InventoryItem
+            {
+                TypeID = reader.GetInt64(0),
+                ManufacturerName = reader.GetString(1),
+                CaliberName = reader.GetString(2),
+                GrainValue = reader.GetString(3),
+                CurrentRounds = reader.GetInt64(4),
+                MinimumThreshold = reader.GetInt64(5),
+                Status = reader.GetString(6),
+                TotalValue = reader.GetDecimal(7)
             });
         }
 

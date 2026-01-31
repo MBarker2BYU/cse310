@@ -3,7 +3,7 @@ using AmmoTracker.Models;
 
 namespace AmmoTracker
 {
-    public partial class PurchaseWindow : Form
+    public sealed partial class PurchaseWindow : Form
     {
 
         #region Events
@@ -81,6 +81,8 @@ namespace AmmoTracker
         public PurchaseWindow(DatabaseHelper databaseHelper, int purchaseId) : this(databaseHelper)
         {
             m_IsUpdate = true;
+
+            Text = @"AmmoTracker [Edit Purchase Window]";
 
             LoadPurchaseData(purchaseId);
         }

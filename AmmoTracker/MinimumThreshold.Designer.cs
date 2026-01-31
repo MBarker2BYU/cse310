@@ -37,6 +37,7 @@
             // 
             // nudMinimumThreshold
             // 
+            nudMinimumThreshold.Increment = new decimal(new int[] { 20, 0, 0, 0 });
             nudMinimumThreshold.Location = new Point(206, 20);
             nudMinimumThreshold.Margin = new Padding(4);
             nudMinimumThreshold.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
@@ -44,7 +45,7 @@
             nudMinimumThreshold.Size = new Size(110, 29);
             nudMinimumThreshold.TabIndex = 0;
             nudMinimumThreshold.TextAlign = HorizontalAlignment.Center;
-            nudMinimumThreshold.Value = new decimal(new int[] { 100000, 0, 0, 0 });
+            nudMinimumThreshold.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
             // lblMinimumThreshold
             // 

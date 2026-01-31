@@ -8,7 +8,7 @@ To use the program: launch the app (database auto-creates on first run), select 
 
 The purpose of writing this software was to master relational data modeling and dynamic SQL in C#, while delivering a functional inventory tracker that helps maintain stock levels, track costs, and avoid shortages — skills directly transferable to real-world data applications.
 
-[Software Demo Video](https://youtu.be/YOUR_VIDEO_ID_HERE)
+[Software Demo Video](https://github.com/MBarker2BYU/cse310/tree/main/AmmoTracker)
 
 # Relational Database
 

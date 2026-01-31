@@ -95,7 +95,11 @@ public partial class MainWindow : Form
     {
 
         if (!GetInventorySelectedRowId(out var id))
+        {
+            dgvPurchaseHistory.DataSource = null;
+
             return;
+        }
 
         dgvPurchaseHistory.DataSource = m_DatabaseHelper.CRUD.GetPurchasesByTypeId(id);
     }

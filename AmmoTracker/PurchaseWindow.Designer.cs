@@ -36,7 +36,7 @@
             lblRoundsPerContainer = new Label();
             nudRoundsPerContainer = new NumericUpDown();
             lblTotalCost = new Label();
-            label1 = new Label();
+            lblTotalCostValue = new Label();
             lblPricePerRound = new Label();
             lblQuantity = new Label();
             lblPurchaseDate = new Label();
@@ -70,7 +70,7 @@
             grpPurchaseInfo.Controls.Add(lblRoundsPerContainer);
             grpPurchaseInfo.Controls.Add(nudRoundsPerContainer);
             grpPurchaseInfo.Controls.Add(lblTotalCost);
-            grpPurchaseInfo.Controls.Add(label1);
+            grpPurchaseInfo.Controls.Add(lblTotalCostValue);
             grpPurchaseInfo.Controls.Add(lblPricePerRound);
             grpPurchaseInfo.Controls.Add(lblQuantity);
             grpPurchaseInfo.Controls.Add(lblPurchaseDate);
@@ -157,14 +157,14 @@
             lblTotalCost.TabIndex = 16;
             lblTotalCost.Text = "Total Cost:";
             // 
-            // label1
+            // lblTotalCostValue
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(406, 365);
-            label1.Name = "label1";
-            label1.Size = new Size(49, 21);
-            label1.TabIndex = 15;
-            label1.Text = "$0.00";
+            lblTotalCostValue.Location = new Point(406, 365);
+            lblTotalCostValue.Name = "lblTotalCostValue";
+            lblTotalCostValue.Size = new Size(120, 21);
+            lblTotalCostValue.TabIndex = 15;
+            lblTotalCostValue.Text = "$0.00";
+            lblTotalCostValue.TextAlign = ContentAlignment.MiddleRight;
             // 
             // lblPricePerRound
             // 
@@ -200,6 +200,7 @@
             nudCostPerRound.Name = "nudCostPerRound";
             nudCostPerRound.Size = new Size(120, 29);
             nudCostPerRound.TabIndex = 11;
+            nudCostPerRound.ValueChanged += nudCostPerRound_ValueChanged;
             // 
             // nudQuantity
             // 
@@ -209,6 +210,7 @@
             nudQuantity.Name = "nudQuantity";
             nudQuantity.Size = new Size(120, 29);
             nudQuantity.TabIndex = 10;
+            nudQuantity.ValueChanged += nudQuantity_ValueChanged;
             // 
             // dtpPurchaseDate
             // 
@@ -363,7 +365,7 @@
         private Label lblQuantity;
         private Label lblPurchaseDate;
         private Label lblTotalCost;
-        private Label label1;
+        private Label lblTotalCostValue;
         private Button btnCancel;
         private Button btnAdd;
         private NumericUpDown nudRoundsPerContainer;

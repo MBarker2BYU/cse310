@@ -103,7 +103,7 @@ namespace AmmoTracker
                     cboCaliber.SelectedValue = ammoType.CaliberID;
                     cboGrain.SelectedValue = ammoType.GrainID;
                 }
-            
+
                 dtpPurchaseDate.Value = m_PurchaseItem.PurchaseDate;
                 nudQuantity.Value = m_PurchaseItem.RoundsAdded;
                 nudRoundsPerContainer.Value = m_PurchaseItem.RoundsPerContainer;
@@ -283,5 +283,20 @@ namespace AmmoTracker
 
         private readonly bool m_IsUpdate = false;
         private PurchaseItem? m_PurchaseItem;
+
+        private void nudQuantity_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateTotalCost();
+        }
+
+        private void nudCostPerRound_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateTotalCost();
+        }
+
+        private void UpdateTotalCost()
+        {
+            lblTotalCostValue.Text = $@"${nudQuantity.Value * nudCostPerRound.Value: #,##0.00}";
+        }
     }
 }
